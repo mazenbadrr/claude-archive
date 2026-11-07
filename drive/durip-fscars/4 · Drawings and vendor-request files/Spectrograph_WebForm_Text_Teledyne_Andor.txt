@@ -1,0 +1,23 @@
+SPECTROGRAPH QUOTE REQUEST: TEXT FOR THE TELEDYNE AND ANDOR WEB FORMS
+(DURIP item 4, budget line $40,000)
+
+Teledyne Princeton Instruments: teledynevisionsolutions.com/contact/contact-us, then "Contact Sales"
+Andor (Oxford Instruments): andor.oxinst.com/contact
+
+FORM FIELDS
+Name: Mazen Badr
+Organization: Morgan State University
+Department: Clarence M. Mitchell, Jr. School of Engineering
+Address: 1700 East Cold Spring Lane, Baltimore, MD 21251, USA
+Email: mabad5@morgan.edu
+Role: Graduate Research Assistant (on behalf of Dr. Oluwatobi Busari, Principal Investigator)
+Product interest: imaging spectrograph (Teledyne: IsoPlane 320; Andor: Kymera 328i)
+Purchase timeframe: on award, June 2027 (budgetary quote needed now)
+
+MESSAGE (paste into the comments box)
+We are preparing a proposal to the FY2027 DURIP program (Office of Naval Research), due 6 November 2026, and need a budgetary quotation for one 320 mm aberration-corrected imaging spectrograph for femtosecond CARS combustion diagnostics:
+- Focal length about 320 mm, imaging (astigmatism-corrected) design
+- 1200 lines/mm grating blazed or optimized for 550–800 nm; please suggest a second grating if useful
+- F-mount output to match a Lambert HiCATT25 intensifier on a high-speed CMOS camera
+- Motorized slit and turret, with USB control and software
+Please address the quotation to Dr. Oluwatobi Busari (Principal Investigator), Morgan State University, Clarence M. Mitchell, Jr. School of Engineering, 1700 East Cold Spring Lane, Baltimore, MD 21251, with part numbers, line prices, at least 90-day validity, lead time and shipping to Baltimore. A reply by Wednesday, 4 November 2026 would be very helpful. Thank you.
