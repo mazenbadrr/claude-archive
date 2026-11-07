@@ -1,0 +1,461 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Rocket Sensor Scope Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a lab bench read top to bottom — sensor chain, then the scope you operate, then what the trace means. */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#18212b; --muted:#5a6672; --line:#cfd6dd;
+  --wire:#3d4c59; --accent:#d9480f; --accent-ink:#ffffff; --ch1:#f2c230; --ch1-ink:#8a6400;
+  --screen:#0c1317; --screen-grid:rgba(170,195,205,.16); --screen-axis:rgba(170,195,205,.38); --screen-text:#c9d6dc;
+  --flame:#ff8a1f; --flame-core:#ffe08a; --metal:#aeb8c1; --metal-dark:#7c8893; --cell:#4c6ef5;
+  --display:"Barlow Condensed", "Arial Narrow", sans-serif;
+  --body:"IBM Plex Sans", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#11161b; --surface:#1a2128; --ink:#e6ebef; --muted:#9aa6b1; --line:#2d3741;
+  --wire:#93a4b2; --accent:#ff6b2c; --accent-ink:#1a0a02; --ch1-ink:#f2c230;
+  --metal:#6f7c88; --metal-dark:#56626d; --cell:#748ffc; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#11161b; --surface:#1a2128; --ink:#e6ebef; --muted:#9aa6b1; --line:#2d3741;
+  --wire:#93a4b2; --accent:#ff6b2c; --accent-ink:#1a0a02; --ch1-ink:#f2c230;
+  --metal:#6f7c88; --metal-dark:#56626d; --cell:#748ffc; color-scheme:dark }
+
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2{font-family:var(--display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(30px,5vw,44px)}
+h2{font-size:24px}
+p{margin:0}
+.lead{color:var(--muted);max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ch1-ink)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;border-radius:0}
+.seg button+button{border-left:1px solid var(--line)}
+button{font:500 14px var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer}
+button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.fire{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-family:var(--display);font-size:20px;letter-spacing:.06em;padding:10px 22px}
+
+/* chain diagram */
+.chain svg{width:100%;height:auto;display:block}
+.chain-wrap{overflow-x:auto}
+.chain-wrap svg{min-width:560px}
+.lbl{font:500 12px var(--body);fill:var(--muted)}
+.lbl-strong{font:600 13px var(--body);fill:var(--ink)}
+.val{font:500 14px var(--mono);fill:var(--ink)}
+.val-big{font:500 18px var(--mono);fill:var(--ink)}
+.metal{fill:var(--metal)} .metal-d{fill:var(--metal-dark)}
+.boxline{fill:var(--surface);stroke:var(--wire);stroke-width:1.25}
+.wire{fill:none;stroke:var(--wire);stroke-width:2;stroke-dasharray:6 7}
+.wire.live{stroke:var(--ch1-ink);animation:flow .5s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-13}}
+@media (prefers-reduced-motion:reduce){.wire.live{animation:none}}
+
+/* scope */
+.scope{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px}
+@media (max-width:760px){.scope{grid-template-columns:1fr}}
+.screen-box{background:var(--screen);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.status{display:flex;flex-wrap:wrap;gap:6px 14px;font:500 12px var(--mono);color:var(--screen-text)}
+.status .c1{color:var(--ch1)}
+.status .st{margin-left:auto;padding:1px 8px;border-radius:4px;background:#26323a}
+.status .st.wait{background:#4a3a0a;color:#ffd666}
+.status .st.trig{background:#0f3d24;color:#69db7c}
+.status .st.stop{background:#4a1414;color:#ff8787}
+canvas{width:100%;aspect-ratio:10/8;max-width:100%;display:block}
+.controls{display:flex;flex-direction:column;gap:14px}
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl-h{font:600 12px var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.knob{display:flex;align-items:center;gap:8px}
+.knob output{flex:1;text-align:center;font:500 15px var(--mono);border:1px solid var(--line);border-radius:6px;padding:6px 4px;font-variant-numeric:tabular-nums}
+.knob button{width:38px;padding:6px 0;font-size:18px;line-height:1}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.hint{font-size:13px;color:var(--muted);min-height:1.4em}
+.hint.warn{color:var(--accent)}
+label.chk{display:flex;gap:8px;align-items:center;font-size:14px}
+
+/* readout + lists */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:12px}
+.meas{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.meas b{display:block;font:500 20px var(--mono);font-variant-numeric:tabular-nums}
+.meas span{font-size:12px;color:var(--muted)}
+.ref{margin-top:10px;font-size:13px;color:var(--muted)}
+ol.try{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px}
+.step{border-top:3px solid var(--line);padding-top:10px}
+.step.on{border-top-color:var(--ch1)}
+.step h3{margin:0 0 4px;font:600 15px var(--body)}
+.step p{font-size:14px;color:var(--muted)}
+.step .n{font:500 12px var(--mono);color:var(--ch1-ink)}
+code{font-family:var(--mono);font-size:.92em}
+.note{border-left:3px solid var(--cell);padding-left:14px}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <span class="eyebrow">Rocket sensors → oscilloscope</span>
+    <h1>Rocket Sensor Scope Lab</h1>
+    <p class="lead">Fire a motor and watch the whole chain: the push or pressure, the sensor's tiny voltage, the amplifier, and the oscilloscope drawing it live. Then read the trace back into real units.</p>
+  </header>
+
+  <section class="panel chain" aria-label="Sensor signal chain">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <h2>1 · The signal chain</h2>
+      <div class="seg" role="group" aria-label="Choose sensor">
+        <button id="mThrust" aria-pressed="true">Thrust stand · load cell</button>
+        <button id="mPress" aria-pressed="false">Liquid engine · pressure sensor</button>
+      </div>
+    </div>
+    <div class="chain-wrap">
+    <svg viewBox="0 0 640 214" role="img" aria-label="Sensor, amplifier and oscilloscope connected by wires">
+      <!-- thrust scene -->
+      <g id="sceneThrust">
+        <rect x="40" y="168" width="250" height="8" rx="2" class="metal-d"/>
+        <rect x="100" y="126" width="140" height="4" class="metal"/>
+        <rect x="118" y="130" width="4" height="38" class="metal"/>
+        <rect x="214" y="130" width="4" height="38" class="metal"/>
+        <rect x="262" y="56" width="14" height="112" class="metal-d"/>
+        <polygon id="flameT" points="98,98 98,122 98,110" fill="var(--flame)"/>
+        <polygon id="flameTc" points="98,104 98,116 98,110" fill="var(--flame-core)"/>
+        <g id="motorG">
+          <polygon points="112,100 98,94 98,126 112,120" class="metal-d"/>
+          <rect x="112" y="96" width="120" height="28" rx="3" fill="#c0392b"/>
+          <text x="172" y="115" text-anchor="middle" style="font:600 13px var(--mono);fill:#fff">C6</text>
+        </g>
+        <g id="cellG">
+          <rect x="232" y="86" width="30" height="48" rx="3" fill="var(--cell)"/>
+          <polyline id="gauge" points="237,100 241,95 245,105 249,95 253,105 257,100" fill="none" stroke="#fff" stroke-width="1.5"/>
+        </g>
+        <text x="172" y="86" text-anchor="middle" class="lbl">Estes C6 motor</text>
+        <text x="247" y="78" text-anchor="middle" class="lbl">Load cell</text>
+        <path id="wireT" class="wire" d="M276 110 H330"/>
+      </g>
+      <!-- pressure scene -->
+      <g id="scenePress" display="none">
+        <polygon id="flameP" points="100,98 100,122 100,110" fill="var(--flame)"/>
+        <polygon id="flamePc" points="100,104 100,116 100,110" fill="var(--flame-core)"/>
+        <polygon points="120,98 100,88 100,132 120,122" class="metal-d"/>
+        <rect x="120" y="86" width="100" height="48" rx="6" class="metal"/>
+        <rect x="220" y="104" width="44" height="12" class="metal-d"/>
+        <polygon points="232,100 248,120 248,100 232,120" fill="var(--wire)"/>
+        <rect x="162" y="70" width="12" height="16" class="metal-d"/>
+        <rect x="156" y="40" width="24" height="30" rx="4" fill="var(--cell)"/>
+        <text x="168" y="30" text-anchor="middle" class="lbl">Pressure transducer</text>
+        <text x="170" y="152" text-anchor="middle" class="lbl">Combustion chamber</text>
+        <text x="240" y="94" text-anchor="middle" class="lbl">Valve</text>
+        <path id="wireP" class="wire" d="M180 55 H300 V110 H330"/>
+      </g>
+      <!-- shared -->
+      <text id="vPhys" x="40" y="200" class="val-big">Force: 0.0 N</text>
+      <rect x="330" y="80" width="124" height="60" rx="8" class="boxline"/>
+      <text id="ampTitle" x="392" y="105" text-anchor="middle" class="lbl-strong">Amplifier</text>
+      <text id="ampSub" x="392" y="124" text-anchor="middle" class="lbl">×1000 gain</text>
+      <text x="300" y="176" text-anchor="middle" class="lbl">Sensor out</text>
+      <text id="vSensor" x="300" y="194" text-anchor="middle" class="val">0.00 mV</text>
+      <text x="420" y="176" text-anchor="middle" class="lbl">To scope</text>
+      <text id="vAmp" x="420" y="194" text-anchor="middle" class="val">0.00 V</text>
+      <path id="wire2" class="wire" d="M454 110 H556"/>
+      <rect x="556" y="84" width="66" height="52" rx="6" fill="var(--screen)"/>
+      <polyline points="564,124 574,124 580,98 586,116 606,118 614,124" fill="none" stroke="var(--ch1)" stroke-width="2"/>
+      <text x="589" y="152" text-anchor="middle" class="lbl">Scope CH1</text>
+    </svg>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Oscilloscope">
+    <h2 style="margin-bottom:12px">2 · The oscilloscope</h2>
+    <div class="scope">
+      <div class="screen-box">
+        <div class="status">
+          <span class="c1" id="sV">CH1 0.25 V/div</span>
+          <span id="sT">0.25 s/div</span>
+          <span id="sTrig">Trig ↑ 0.30 V</span>
+          <span class="st wait" id="sState">WAIT</span>
+        </div>
+        <canvas id="cv" aria-label="Oscilloscope screen showing voltage against time"></canvas>
+      </div>
+      <div class="controls">
+        <button class="fire" id="fire">FIRE</button>
+        <div class="ctl">
+          <span class="ctl-h">Trigger mode</span>
+          <div class="seg" role="group" aria-label="Trigger mode">
+            <button id="tSingle" aria-pressed="true">Single</button>
+            <button id="tRoll" aria-pressed="false">Roll (live)</button>
+          </div>
+        </div>
+        <div class="ctl">
+          <span class="ctl-h">Volts / div (height)</span>
+          <div class="knob"><button id="vDown" aria-label="Fewer volts per division">−</button><output id="vOut">0.25 V</output><button id="vUp" aria-label="More volts per division">+</button></div>
+        </div>
+        <div class="ctl">
+          <span class="ctl-h">Time / div (width)</span>
+          <div class="knob"><button id="tDown" aria-label="Less time per division">−</button><output id="tOut">0.25 s</output><button id="tUp" aria-label="More time per division">+</button></div>
+        </div>
+        <div class="ctl">
+          <span class="ctl-h">Trigger level <span id="lvlOut" style="font-family:var(--mono)">0.30 V</span></span>
+          <input type="range" id="lvl" min="0" max="5" step="0.05" value="0.3" aria-label="Trigger level in volts">
+        </div>
+        <label class="chk"><input type="checkbox" id="slow" checked> Slow motion (¼ speed)</label>
+        <p class="hint" id="hint">Press FIRE. In Single mode the scope waits, catches the firing once, then stops.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel" aria-label="Measurements">
+      <h2>3 · Reading the trace</h2>
+      <p class="lead" style="margin-top:6px" id="convLine">The amplifier gives 0.102 V for every newton, so <code>N = V ÷ 0.102</code>.</p>
+      <div class="readout">
+        <div class="meas"><span>Peak voltage</span><b id="mPeakV">—</b></div>
+        <div class="meas"><span id="mPeakLbl">Peak thrust</span><b id="mPeak">—</b></div>
+        <div class="meas"><span>Burn time</span><b id="mBurn">—</b></div>
+        <div class="meas"><span id="mExtraLbl">Total impulse</span><b id="mExtra">—</b></div>
+      </div>
+      <p class="ref" id="refLine">Estes publishes for the C6: 14.1 N peak, 8.8 N·s total impulse, about 1.9 s burn. The trace here is shaped to match.</p>
+    </section>
+    <section class="panel" aria-label="Things to try">
+      <h2>Try this with her</h2>
+      <ol class="try">
+        <li>Fire in <b>Single</b> mode. Count squares: how tall is the peak, and how wide is the burn?</li>
+        <li>Turn volts/div down to 0.1 V and fire again. The peak runs off the top. Why?</li>
+        <li>Drag the trigger level to 2 V and fire. Nothing is caught, because the signal never crosses it.</li>
+        <li>Switch to <b>Roll</b> and fire. The trace scrolls like a heart monitor instead of freezing.</li>
+        <li>Pick the pressure sensor. Before firing the line sits at 0.5 V, not 0 V. Ask her why.</li>
+      </ol>
+    </section>
+  </div>
+
+  <section class="panel" aria-label="How the signal travels">
+    <h2>How the signal travels</h2>
+    <div class="steps">
+      <div class="step" id="st1"><span class="n">1</span><h3>Something physical happens</h3><p id="st1p">The motor pushes on the stand with a force, measured in newtons.</p></div>
+      <div class="step" id="st2"><span class="n">2</span><h3>The sensor turns it into voltage</h3><p id="st2p">The load cell's metal bends a tiny bit. Strain gauges glued to it change resistance, giving a few millivolts.</p></div>
+      <div class="step" id="st3"><span class="n">3</span><h3>The signal is made bigger</h3><p id="st3p">Millivolts are too small to see, so an amplifier multiplies them by 1000 into volts.</p></div>
+      <div class="step" id="st4"><span class="n">4</span><h3>The scope draws it</h3><p>Up is volts, across is time. The trigger catches the moment the firing starts.</p></div>
+      <div class="step" id="st5"><span class="n">5</span><h3>Back to real units</h3><p id="st5p">Divide the volts by the calibration number to get newtons again.</p></div>
+    </div>
+  </section>
+
+  <section class="panel note" aria-label="Note on our stand">
+    <p><b>On our thrust stand:</b> the HX711 board is a digital converter. It sends numbers to the Arduino instead of a smooth voltage, so the Arduino records the thrust curve rather than the scope. The picture on the scope here is what an analog amplifier would show, and it is the same curve you will plot in Google Sheets. Pressure-sensor numbers on this page are illustrative, not data from our rig.</p>
+  </section>
+</div>
+
+<script>
+(function(){
+  const MODES = {
+    thrust:{
+      pts:[[0,0],[0.05,3],[0.2,14.1],[0.35,5.0],[0.5,4.45],[1.65,3.95],[1.86,0]],
+      dur:1.86, toV:x=>x*0.102, fromV:v=>v/0.102, noise:0.004,
+      vdiv:0.25, tdiv:0.25, trig:0.30, unit:'N',
+      phys:x=>'Force: '+x.toFixed(1)+' N', sensor:x=>(x*0.102).toFixed(2)+' mV',
+      amp:['Amplifier','×1000 gain'],
+      conv:'The amplifier gives 0.102 V for every newton, so <code>N = V ÷ 0.102</code>.',
+      peakLbl:'Peak thrust', extraLbl:'Total impulse',
+      ref:'Estes publishes for the C6: 14.1 N peak, 8.8 N·s total impulse, about 1.9 s burn. The trace here is shaped to match.',
+      steps:['The motor pushes on the stand with a force, measured in newtons.',
+             'The load cell\'s metal bends a tiny bit. Strain gauges glued to it change resistance, giving a few millivolts.',
+             'Millivolts are too small to see, so an amplifier multiplies them by 1000 into volts.',
+             'Divide the volts by the calibration number to get newtons again.']
+    },
+    pressure:{
+      pts:[[0,0],[0.15,40],[0.35,330],[0.6,300],[3.4,300],[3.6,60],[3.9,0]],
+      dur:3.9, toV:p=>0.5+p*0.008, fromV:v=>(v-0.5)/0.008, noise:0.006,
+      vdiv:0.5, tdiv:0.5, trig:1.0, unit:'psi', wobble:true,
+      phys:x=>'Chamber: '+x.toFixed(0)+' psi', sensor:x=>(0.5+x*0.008).toFixed(2)+' V',
+      amp:['Built into sensor','0.5–4.5 V out'],
+      conv:'This sensor gives 0.5 V at 0 psi and adds 0.008 V per psi, so <code>psi = (V − 0.5) ÷ 0.008</code>.',
+      peakLbl:'Peak pressure', extraLbl:'Steady pressure',
+      ref:'Illustrative run: a 0–500 psi transducer on a small liquid engine. Startup spike, steady burn, then shutdown when the valve closes.',
+      steps:['Burning propellant raises the pressure inside the combustion chamber, measured in psi.',
+             'A thin metal disc inside the transducer flexes with pressure. Strain gauges on it change resistance.',
+             'This sensor has its amplifier built in, so it already outputs 0.5–4.5 V.',
+             'Subtract the 0.5 V offset, then divide by 0.008 V per psi.']
+    }
+  };
+  const VDIVS=[0.1,0.2,0.25,0.5,1,2], TDIVS=[0.1,0.2,0.25,0.5,1];
+  const RATE=400, PRE=1; // samples per second, pre-trigger divisions
+  let mode='thrust', M=MODES.thrust, vdiv=M.vdiv, tdiv=M.tdiv, level=M.trig;
+  let trigMode='single', state='wait', trigT=null, fireT=null, simT=0, last=null;
+  let buf=[], measured=false;
+  const $=id=>document.getElementById(id);
+  const cv=$('cv'), ctx=cv.getContext('2d');
+
+  function interp(pts,t){
+    if(t<=0||t>=pts[pts.length-1][0]) return 0;
+    for(let i=1;i<pts.length;i++){ if(t<=pts[i][0]){ const [t0,y0]=pts[i-1],[t1,y1]=pts[i]; return y0+(y1-y0)*(t-t0)/(t1-t0);} }
+    return 0;
+  }
+  function physAt(t){
+    if(fireT===null) return 0;
+    const r=t-fireT; let x=interp(M.pts,r);
+    if(M.wobble && r>0.6 && r<3.4) x+=3*Math.sin(2*Math.PI*7*r);
+    return Math.max(0,x);
+  }
+  const noise=()=>(Math.random()+Math.random()-1)*M.noise;
+
+  function fmtV(v){return (v<1?v.toFixed(2):v.toFixed(v%1?2:0))+' V'}
+  function fmtT(t){return t<1? (t*1000).toFixed(0)+' ms' : t.toFixed(0)+' s'}
+  function syncUI(){
+    $('vOut').textContent=fmtV(vdiv); $('tOut').textContent=fmtT(tdiv);
+    $('sV').textContent='CH1 '+fmtV(vdiv)+'/div'; $('sT').textContent=fmtT(tdiv)+'/div';
+    $('sTrig').textContent=trigMode==='single'?('Trig ↑ '+level.toFixed(2)+' V'):'Roll mode';
+    $('lvlOut').textContent=level.toFixed(2)+' V'; $('lvl').value=level;
+    const s=$('sState');
+    const map={wait:['WAIT','wait'],trig:["TRIG'D",'trig'],stop:['STOP','stop'],roll:['ROLL','']};
+    const k=trigMode==='roll'?'roll':state; s.textContent=map[k][0]; s.className='st '+map[k][1];
+    $('vDown').disabled=vdiv===VDIVS[0]; $('vUp').disabled=vdiv===VDIVS[VDIVS.length-1];
+    $('tDown').disabled=tdiv===TDIVS[0]; $('tUp').disabled=tdiv===TDIVS[TDIVS.length-1];
+  }
+  function setHint(t,warn){const h=$('hint'); h.textContent=t; h.className='hint'+(warn?' warn':'');}
+
+  function setMode(m){
+    mode=m; M=MODES[m]; vdiv=M.vdiv; tdiv=M.tdiv; level=M.trig;
+    fireT=null; trigT=null; state='wait'; buf=[]; measured=false; clearMeas();
+    $('mThrust').setAttribute('aria-pressed',m==='thrust'); $('mPress').setAttribute('aria-pressed',m==='pressure');
+    $('sceneThrust').setAttribute('display',m==='thrust'?'inline':'none'); $('scenePress').setAttribute('display',m==='pressure'?'inline':'none');
+    $('ampTitle').textContent=M.amp[0]; $('ampSub').textContent=M.amp[1];
+    $('convLine').innerHTML=M.conv; $('refLine').textContent=M.ref;
+    $('mPeakLbl').textContent=M.peakLbl; $('mExtraLbl').textContent=M.extraLbl;
+    $('st1p').textContent=M.steps[0]; $('st2p').textContent=M.steps[1]; $('st3p').textContent=M.steps[2]; $('st5p').textContent=M.steps[3];
+    setHint('Press FIRE. In Single mode the scope waits, catches the firing once, then stops.');
+    syncUI();
+  }
+  function clearMeas(){['mPeakV','mPeak','mBurn','mExtra'].forEach(id=>$(id).textContent='—');}
+
+  function measure(){
+    const start=trigT-PRE*tdiv, end=start+10*tdiv;
+    const s=buf.filter(p=>p.t>=start&&p.t<=end); if(!s.length) return;
+    let pv=-1e9; s.forEach(p=>{if(p.v>pv)pv=p.v});
+    const peak=M.fromV(pv), thr=peak*0.05;
+    const on=s.filter(p=>M.fromV(p.v)>thr);
+    const burn=on.length? on[on.length-1].t-on[0].t : 0;
+    $('mPeakV').textContent=pv.toFixed(2)+' V';
+    $('mPeak').textContent=peak.toFixed(mode==='thrust'?1:0)+' '+M.unit;
+    $('mBurn').textContent=burn.toFixed(2)+' s';
+    if(mode==='thrust'){
+      let I=0; for(let i=1;i<s.length;i++){ I+=Math.max(0,M.fromV(s[i].v))*(s[i].t-s[i-1].t); }
+      $('mExtra').textContent=I.toFixed(1)+' N·s';
+    } else {
+      const mid=s.filter(p=>p.t>fireT+1&&p.t<fireT+3); const avg=mid.reduce((a,p)=>a+M.fromV(p.v),0)/(mid.length||1);
+      $('mExtra').textContent=avg.toFixed(0)+' psi';
+    }
+    const cut=end<fireT+M.dur;
+    setHint(cut? 'Captured — but the burn runs past the right edge. Turn time/div up and fire again.' : 'Captured. Count the squares, then check your answer against the numbers below.', cut);
+  }
+
+  function step(dt){
+    const n=Math.max(1,Math.round(dt*RATE));
+    for(let i=0;i<n;i++){
+      simT+=1/RATE;
+      const v=M.toV(physAt(simT))+noise();
+      const prev=buf.length?buf[buf.length-1].v:v;
+      buf.push({t:simT,v});
+      if(trigMode==='single' && state==='wait' && fireT!==null && prev<level && v>=level){ trigT=simT; state='trig'; }
+    }
+    if(buf.length>RATE*60) buf.splice(0,buf.length-RATE*60);
+    if(trigMode==='single' && state==='trig' && simT>=trigT+(10-PRE)*tdiv){ state='stop'; measure(); measured=true; }
+    if(trigMode==='single' && state==='wait' && fireT!==null && simT>fireT+M.dur+0.4){
+      setHint('The signal never crossed the trigger level, so nothing was caught. Lower the level and fire again.',true);
+      fireT=null;
+    }
+  }
+
+  function draw(){
+    const r=cv.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+    const W=Math.round(r.width), H=Math.round(r.height);
+    if(cv.width!==W*dpr||cv.height!==H*dpr){cv.width=W*dpr;cv.height=H*dpr;}
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const css=getComputedStyle(document.documentElement);
+    const gx=W/10, gy=H/8;
+    ctx.fillStyle=css.getPropertyValue('--screen'); ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle=css.getPropertyValue('--screen-grid'); ctx.lineWidth=1; ctx.beginPath();
+    for(let i=1;i<10;i++){ctx.moveTo(i*gx+.5,0);ctx.lineTo(i*gx+.5,H);}
+    for(let j=1;j<8;j++){ctx.moveTo(0,j*gy+.5);ctx.lineTo(W,j*gy+.5);}
+    ctx.stroke();
+    ctx.strokeStyle=css.getPropertyValue('--screen-axis'); ctx.beginPath();
+    for(let i=0;i<50;i++){const x=i*gx/5; ctx.moveTo(x,H/2-3);ctx.lineTo(x,H/2+3);}
+    for(let j=0;j<40;j++){const y=j*gy/5; ctx.moveTo(W/2-3,y);ctx.lineTo(W/2+3,y);}
+    ctx.stroke();
+    const ground=H-gy, yOf=v=>Math.max(-4,Math.min(H+4,ground-v/vdiv*gy));
+    const ch1=css.getPropertyValue('--ch1').trim(), acc=css.getPropertyValue('--accent').trim();
+    // ground marker
+    ctx.fillStyle=ch1; ctx.beginPath(); ctx.moveTo(0,ground-6);ctx.lineTo(10,ground);ctx.lineTo(0,ground+6);ctx.fill();
+    // window
+    let t0=null, tEnd=null;
+    if(trigMode==='roll'){ t0=simT-10*tdiv; tEnd=simT; }
+    else if(state!=='wait' || trigT!==null){ if(trigT!==null){ t0=trigT-PRE*tdiv; tEnd=Math.min(simT,t0+10*tdiv);} }
+    if(trigMode==='single'){
+      const ty=yOf(level); ctx.fillStyle=acc; ctx.beginPath(); ctx.moveTo(W,ty-6);ctx.lineTo(W-10,ty);ctx.lineTo(W,ty+6);ctx.fill();
+      const tx=PRE*gx; ctx.beginPath(); ctx.moveTo(tx-6,0);ctx.lineTo(tx,9);ctx.lineTo(tx+6,0);ctx.fill();
+    }
+    if(t0!==null){
+      ctx.strokeStyle=ch1; ctx.lineWidth=2; ctx.shadowColor=ch1; ctx.shadowBlur=6; ctx.beginPath();
+      let started=false;
+      for(const p of buf){ if(p.t<t0) continue; if(p.t>tEnd) break;
+        const x=(p.t-t0)/(10*tdiv)*W, y=yOf(p.v);
+        if(!started){ctx.moveTo(x,y);started=true;} else ctx.lineTo(x,y); }
+      ctx.stroke(); ctx.shadowBlur=0;
+    } else {
+      ctx.fillStyle=css.getPropertyValue('--screen-text'); ctx.font='500 13px '+css.getPropertyValue('--mono');
+      ctx.textAlign='center'; ctx.fillText('Waiting for trigger…',W/2,H/2-12);
+    }
+  }
+
+  function updateChain(){
+    const x=physAt(simT), mx=mode==='thrust'?14.1:330, f=Math.min(1.1,x/mx);
+    $('vPhys').textContent=M.phys(x);
+    $('vSensor').textContent=M.sensor(x);
+    $('vAmp').textContent=M.toV(x).toFixed(2)+' V';
+    const len=f>0.01? 14+f*80 : 0, nx=mode==='thrust'?98:100;
+    const fl=mode==='thrust'?['flameT','flameTc']:['flameP','flamePc'];
+    $(fl[0]).setAttribute('points',`${nx},98 ${nx},122 ${nx-len},110`);
+    $(fl[1]).setAttribute('points',`${nx},104 ${nx},116 ${nx-len*0.55},110`);
+    if(mode==='thrust'){
+      const s=1-0.12*f;
+      $('cellG').setAttribute('transform',`translate(${(262*(1-s)).toFixed(2)},0) scale(${s.toFixed(3)},1)`);
+      $('motorG').setAttribute('transform',`translate(${(30*(1-s)).toFixed(2)},0)`);
+    }
+    const live=f>0.01;
+    ['wireT','wireP','wire2'].forEach(id=>$(id).classList.toggle('live',live));
+    ['st1','st2','st3','st4','st5'].forEach((id,i)=>$(id).classList.toggle('on', live && i<4 || (i===4 && measured)));
+  }
+
+  function frame(ts){
+    if(last===null) last=ts;
+    let dt=Math.min(0.05,(ts-last)/1000); last=ts;
+    if($('slow').checked) dt*=0.25;
+    step(dt); draw(); updateChain(); syncUI();
+    $('fire').disabled = fireT!==null && simT<fireT+M.dur+0.2;
+    requestAnimationFrame(frame);
+  }
+
+  $('fire').onclick=()=>{
+    if(trigMode==='single'){ state='wait'; trigT=null; measured=false; clearMeas(); setHint('Armed. Waiting for the signal to cross the trigger level…'); }
+    else setHint('Roll mode shows the last '+(10*tdiv).toFixed(1)+' s, scrolling. Nothing freezes.');
+    fireT=simT+0.15;
+  };
+  $('mThrust').onclick=()=>setMode('thrust');
+  $('mPress').onclick=()=>setMode('pressure');
+  $('tSingle').onclick=()=>{trigMode='single';state='wait';trigT=null;$('tSingle').setAttribute('aria-pressed',true);$('tRoll').setAttribute('aria-pressed',false);setHint('Single mode: press FIRE and the scope catches it once.');};
+  $('tRoll').onclick=()=>{trigMode='roll';$('tRoll').setAttribute('aria-pressed',true);$('tSingle').setAttribute('aria-pressed',false);setHint('Roll mode: the trace scrolls continuously, like a heart monitor.');};
+  const idx=(a,v)=>a.indexOf(v);
+  $('vDown').onclick=()=>{vdiv=VDIVS[Math.max(0,idx(VDIVS,vdiv)-1)];};
+  $('vUp').onclick=()=>{vdiv=VDIVS[Math.min(VDIVS.length-1,idx(VDIVS,vdiv)+1)];};
+  $('tDown').onclick=()=>{tdiv=TDIVS[Math.max(0,idx(TDIVS,tdiv)-1)];};
+  $('tUp').onclick=()=>{tdiv=TDIVS[Math.min(TDIVS.length-1,idx(TDIVS,tdiv)+1)];};
+  $('lvl').oninput=e=>{level=parseFloat(e.target.value);};
+
+  setMode('thrust');
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,306 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Thrust Data to Flight</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one question per panel, read top to bottom — each panel turns the same thrust curve into a decision. */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#18212b; --muted:#5a6672; --line:#cfd6dd; --grid:#e3e8ec;
+  --curve:#b8860b; --fill:rgba(242,194,48,.38); --accent:#d9480f; --accent-ink:#ffffff;
+  --good:#2b8a3e; --good-fill:rgba(43,138,62,.18); --weight:#4c6ef5; --sky:#e7f0f8; --ground:#8b9aa6;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#11161b; --surface:#1a2128; --ink:#e6ebef; --muted:#9aa6b1; --line:#2d3741; --grid:#232c35;
+  --curve:#f2c230; --fill:rgba(242,194,48,.28); --accent:#ff6b2c; --accent-ink:#1a0a02;
+  --good:#69db7c; --good-fill:rgba(105,219,124,.18); --weight:#748ffc; --sky:#16222e; --ground:#56626d; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#11161b; --surface:#1a2128; --ink:#e6ebef; --muted:#9aa6b1; --line:#2d3741; --grid:#232c35;
+  --curve:#f2c230; --fill:rgba(242,194,48,.28); --accent:#ff6b2c; --accent-ink:#1a0a02;
+  --good:#69db7c; --good-fill:rgba(105,219,124,.18); --weight:#748ffc; --sky:#16222e; --ground:#56626d; color-scheme:dark }
+
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:clamp(30px,5vw,44px)} h2{font-size:24px}
+p{margin:0}
+.lead{color:var(--muted);max-width:68ch}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.q{font:500 13px var(--mono);color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+button{font:500 14px var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer}
+button.go{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-family:var(--display);font-size:18px;letter-spacing:.05em;padding:8px 20px}
+button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;border-radius:0} .seg button+button{border-left:1px solid var(--line)}
+label.sl{display:flex;flex-direction:column;gap:4px;min-width:220px;flex:1;font-size:13px;color:var(--muted)}
+label.sl b{font:500 15px var(--mono);color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+svg{display:block;width:100%;height:auto}
+.ax{font:400 11px var(--mono);fill:var(--muted)}
+.axt{font:500 12px var(--body);fill:var(--muted)}
+.gl{stroke:var(--grid);stroke-width:1}
+.base{stroke:var(--muted);stroke-width:1}
+.curve{fill:none;stroke:var(--curve);stroke-width:2.5;stroke-linejoin:round}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.m{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.m span{font-size:12px;color:var(--muted)}
+.m b{display:block;font:500 20px var(--mono);font-variant-numeric:tabular-nums}
+.verdict{border-left:4px solid var(--line);padding:6px 12px;font-weight:500}
+.verdict.good{border-color:var(--good)} .verdict.bad{border-color:var(--accent)}
+.flight{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px}
+@media (max-width:560px){.flight{grid-template-columns:88px minmax(0,1fr)}}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.card h3{margin:0 0 4px;font:600 15px var(--body)}
+.card p{font-size:14px;color:var(--muted)}
+.flow-wrap{overflow-x:auto} .flow-wrap svg{min-width:640px}
+.fbox{fill:var(--surface);stroke:var(--line);stroke-width:1.25}
+.fbox.key{stroke:var(--curve);stroke-width:2}
+.ft{font:600 13px var(--body);fill:var(--ink)} .fs{font:400 11.5px var(--body);fill:var(--muted)}
+.arrow{stroke:var(--muted);stroke-width:1.25;fill:none}
+.small{font-size:13px;color:var(--muted)}
+code{font-family:var(--mono);font-size:.92em}
+</style>
+
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:8px">
+    <span class="eyebrow">After the static fire</span>
+    <h1>Thrust Data to Flight</h1>
+    <p class="lead">A thrust curve is not the end of the test. Engineers use it to answer three questions before anything flies: how much push the motor gives, whether the rocket can lift off, and how high it goes before the parachute should open.</p>
+  </header>
+
+  <section class="panel" aria-label="Where the data goes">
+    <h2>One test, three answers</h2>
+    <div class="flow-wrap">
+    <svg viewBox="0 0 760 200" role="img" aria-label="Static fire test produces a thrust curve, which answers three questions that lead to design decisions">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
+      <rect class="fbox" x="8" y="76" width="120" height="48" rx="8"/><text class="ft" x="68" y="98" text-anchor="middle">Static fire test</text><text class="fs" x="68" y="114" text-anchor="middle">load cell data</text>
+      <rect class="fbox key" x="160" y="76" width="120" height="48" rx="8"/><text class="ft" x="220" y="98" text-anchor="middle">Thrust curve</text><text class="fs" x="220" y="114" text-anchor="middle">newtons vs time</text>
+      <path class="arrow" d="M128 100H158" marker-end="url(#ah)"/>
+      <rect class="fbox" x="320" y="12" width="200" height="48" rx="8"/><text class="ft" x="420" y="34" text-anchor="middle">1 · How much total push?</text><text class="fs" x="420" y="50" text-anchor="middle">impulse = area under the curve</text>
+      <rect class="fbox" x="320" y="76" width="200" height="48" rx="8"/><text class="ft" x="420" y="98" text-anchor="middle">2 · Will it lift off?</text><text class="fs" x="420" y="114" text-anchor="middle">thrust compared with weight</text>
+      <rect class="fbox" x="320" y="140" width="200" height="48" rx="8"/><text class="ft" x="420" y="162" text-anchor="middle">3 · How high, and when?</text><text class="fs" x="420" y="178" text-anchor="middle">flight prediction, parachute timing</text>
+      <path class="arrow" d="M280 100H300V36H318" marker-end="url(#ah)"/>
+      <path class="arrow" d="M280 100H318" marker-end="url(#ah)"/>
+      <path class="arrow" d="M300 100V164H318" marker-end="url(#ah)"/>
+      <rect class="fbox" x="572" y="64" width="180" height="72" rx="8"/><text class="ft" x="662" y="88" text-anchor="middle">Design decisions</text><text class="fs" x="662" y="106" text-anchor="middle">which motor, how heavy,</text><text class="fs" x="662" y="122" text-anchor="middle">which parachute delay</text>
+      <path class="arrow" d="M520 36H546V92H570" marker-end="url(#ah)"/>
+      <path class="arrow" d="M520 100H570" marker-end="url(#ah)"/>
+      <path class="arrow" d="M520 164H546V108H570" marker-end="url(#ah)"/>
+    </svg>
+    </div>
+  </section>
+
+  <!-- 1 impulse -->
+  <section class="panel" aria-label="Total impulse">
+    <span class="q">Question 1</span>
+    <h2>How much total push does the motor give?</h2>
+    <p class="lead">Push hard for a short time or gently for a long time: what counts is <b>how hard × how long</b>. On the graph that is the area under the curve. Each grid square is 2 N × 0.2 s = 0.4 N·s, so counting squares gives the total impulse.</p>
+    <svg id="cA" viewBox="0 0 600 320" role="img" aria-label="Estes C6 thrust curve with the area under it filling up"></svg>
+    <div class="row"><button class="go" id="aGo">Fill the area</button><button id="aReset">Reset</button></div>
+    <div class="out">
+      <div class="m"><span>Time so far</span><b id="aT">0.00 s</b></div>
+      <div class="m"><span>Squares filled</span><b id="aSq">0.0</b></div>
+      <div class="m"><span>Total impulse</span><b id="aI">0.0 N·s</b></div>
+      <div class="m"><span>Motor class</span><b id="aCls">—</b></div>
+    </div>
+    <p class="small">Letter classes double each step: A = 1.26–2.5 N·s, B = 2.51–5, C = 5.01–10, D = 10.01–20. That is where the "C" in C6-5 comes from.</p>
+  </section>
+
+  <!-- 2 liftoff -->
+  <section class="panel" aria-label="Thrust compared with weight">
+    <span class="q">Question 2</span>
+    <h2>Will the rocket lift off?</h2>
+    <p class="lead">The blue line is the rocket's weight pulling down. The rocket can only speed up while the thrust curve is above that line (green). Make the rocket heavier and watch the green shrink.</p>
+    <label class="sl" for="wM">Rocket weight with motor <b id="wMo">100 g</b><input type="range" id="wM" min="50" max="600" step="10" value="100"></label>
+    <svg id="cB" viewBox="0 0 600 320" role="img" aria-label="Thrust curve compared with a horizontal weight line"></svg>
+    <div class="out">
+      <div class="m"><span>Weight (down)</span><b id="wW">0.98 N</b></div>
+      <div class="m"><span>Thrust above weight for</span><b id="wDur">—</b></div>
+      <div class="m"><span>Peak thrust ÷ weight</span><b id="wR">—</b></div>
+    </div>
+    <p class="verdict" id="wV">—</p>
+  </section>
+
+  <!-- 3 flight -->
+  <section class="panel" aria-label="Flight prediction">
+    <span class="q">Question 3</span>
+    <h2>How high will it go, and when should the parachute open?</h2>
+    <p class="lead">The motor burns for about 1.9 s, then the rocket coasts upward and slows down. The second number in C6-<b>5</b> is a delay: 5 seconds after burnout a small charge pushes the parachute out. The best delay opens it right at the top, when the rocket is barely moving.</p>
+    <div class="row">
+      <label class="sl" for="fM">Rocket weight without motor <b id="fMo">60 g</b><input type="range" id="fM" min="30" max="120" step="5" value="60"></label>
+      <div style="display:flex;flex-direction:column;gap:4px"><span class="small">Motor delay</span>
+        <div class="seg" role="group" aria-label="Motor delay"><button id="d3" aria-pressed="false">C6-3</button><button id="d5" aria-pressed="true">C6-5</button><button id="d7" aria-pressed="false">C6-7</button></div></div>
+      <button class="go" id="fGo">Launch</button>
+    </div>
+    <div class="flight">
+      <svg id="sky" viewBox="0 0 120 340" role="img" aria-label="Rocket climbing in the sky"></svg>
+      <svg id="cC" viewBox="0 0 480 340" role="img" aria-label="Altitude against time with burnout, top of flight and parachute markers"></svg>
+    </div>
+    <div class="out">
+      <div class="m"><span>Highest point</span><b id="fAp">—</b></div>
+      <div class="m"><span>Reached at</span><b id="fTa">—</b></div>
+      <div class="m"><span>Parachute opens at</span><b id="fTe">—</b></div>
+      <div class="m"><span>Speed when it opens</span><b id="fVe">—</b></div>
+    </div>
+    <p class="verdict" id="fV">—</p>
+    <p class="small">Simplified straight-up flight: 25 mm body, drag coefficient 0.75, no wind, motor mass 24 g burning 11 g of propellant. OpenRocket does the full version of this calculation with her rocket's real shape.</p>
+  </section>
+
+  <section class="panel" aria-label="Other uses">
+    <h2>Where else engineers use this data</h2>
+    <div class="cards">
+      <div class="card"><h3>Simulation software</h3><p>A thrust curve can be saved as a motor file (.eng). OpenRocket then flies her own rocket design with her measured motor instead of the catalog one.</p></div>
+      <div class="card"><h3>Quality check</h3><p>Compare the measured curve with the certified one. A big difference means a bad motor, a bad stand, or a calibration mistake, and the test plan should say how to tell which.</p></div>
+      <div class="card"><h3>Strength of parts</h3><p>The 14 N peak is about the weight of a 1.4 kg bag. The motor mount and its glue must hold that push every flight.</p></div>
+      <div class="card"><h3>Big engines</h3><p>On liquid engines, live pressure and thrust data tell the team whether the engine is healthy, and are used to shut it down automatically if a number goes out of range.</p></div>
+    </div>
+    <p class="small">Ask her: the Estes product page lists 10 N·s and 15.3 N for the C6-5, but the NAR certification test gives 8.8 N·s and 14.1 N. Which would she trust for her report, and why? Her own test is the tie-breaker.</p>
+  </section>
+
+  <p class="small">Data: NAR-certified Estes C6 thrust data via <a href="https://www.thrustcurve.org/motors/Estes/C6/" target="_blank" rel="noopener">thrustcurve.org</a> (8.8 N·s, 4.7 N average, 14.1 N peak, 1.9 s, 24 g total, 11 g propellant). Maximum liftoff weight 113 g from the <a href="https://estesrockets.com/products/c6-5-engines" target="_blank" rel="noopener">Estes C6-5 product page</a>. Curve shape is a close approximation of the certified curve.</p>
+</div>
+
+<script>
+(function(){
+  const NS='http://www.w3.org/2000/svg', $=id=>document.getElementById(id);
+  const PTS=[[0,0],[0.05,3],[0.2,14.1],[0.35,5.0],[0.5,4.45],[1.65,3.95],[1.86,0]], BURN=1.86;
+  const F=t=>{if(t<=0||t>=BURN)return 0;for(let i=1;i<PTS.length;i++)if(t<=PTS[i][0]){const[a,b]=PTS[i-1],[c,d]=PTS[i];return b+(d-b)*(t-a)/(c-a);}return 0;};
+  let ITOT=0; for(let t=0;t<BURN;t+=0.001) ITOT+=F(t)*0.001;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function el(tag,attrs,parent,text){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e;}
+  function axes(svg,o){
+    const {W,H,l,r,t,b,xmax,ymax,xs,ys,xl,yl,xfmt,yfmt}=o;
+    const X=x=>l+x/xmax*(W-l-r), Y=y=>H-b-y/ymax*(H-t-b);
+    const g=el('g',{},svg);
+    for(let x=0;x<=xmax+1e-9;x+=xs){el('line',{x1:X(x),x2:X(x),y1:Y(0),y2:Y(ymax),class:'gl'},g);el('text',{x:X(x),y:H-b+16,class:'ax','text-anchor':'middle'},g,xfmt(x));}
+    for(let y=0;y<=ymax+1e-9;y+=ys){el('line',{x1:X(0),x2:X(xmax),y1:Y(y),y2:Y(y),class:'gl'},g);el('text',{x:l-6,y:Y(y)+4,class:'ax','text-anchor':'end'},g,yfmt(y));}
+    el('line',{x1:X(0),x2:X(xmax),y1:Y(0),y2:Y(0),class:'base'},g);
+    el('text',{x:(l+W-r)/2,y:H-4,class:'axt','text-anchor':'middle'},g,xl);
+    el('text',{x:12,y:(t+H-b)/2,class:'axt','text-anchor':'middle',transform:`rotate(-90 12 ${(t+H-b)/2})`},g,yl);
+    return {X,Y};
+  }
+  const curvePath=(X,Y,t1=BURN)=>{let d='';for(let t=0;t<=Math.min(t1,BURN)+1e-9;t+=0.005)d+=(d?'L':'M')+X(t).toFixed(1)+' '+Y(F(t)).toFixed(1);return d;};
+  const thrustAxes={W:600,H:320,l:52,r:16,t:14,b:40,xmax:2,ymax:16,xs:0.2,ys:2,xl:'time (s)',yl:'thrust (N)',xfmt:x=>x.toFixed(1),yfmt:y=>y.toFixed(0)};
+
+  /* ---------- 1. impulse ---------- */
+  const A=$('cA'), a=axes(A,thrustAxes);
+  const aFill=el('path',{fill:'var(--fill)',stroke:'none'},A);
+  const aCur=el('path',{class:'curve',d:curvePath(a.X,a.Y)},A);
+  const aLine=el('line',{y1:a.Y(0),y2:a.Y(16),stroke:'var(--accent)','stroke-width':1.5,'stroke-dasharray':'4 4',opacity:0},A);
+  function cls(I){return I<=0?'—':I<=2.5?'A':I<=5?'B':I<=10?'C':'D';}
+  function setFill(tp){
+    let d=`M${a.X(0)} ${a.Y(0)}`, I=0;
+    for(let t=0;t<=tp+1e-9;t+=0.005){d+=`L${a.X(t).toFixed(1)} ${a.Y(F(t)).toFixed(1)}`;}
+    d+=`L${a.X(tp)} ${a.Y(0)}Z`; aFill.setAttribute('d',d);
+    for(let t=0;t<tp;t+=0.001)I+=F(t)*0.001;
+    $('aT').textContent=tp.toFixed(2)+' s'; $('aSq').textContent=(I/0.4).toFixed(1);
+    $('aI').textContent=I.toFixed(1)+' N·s'; $('aCls').textContent=tp>=BURN?cls(I)+' class':cls(I);
+    aLine.setAttribute('x1',a.X(tp)); aLine.setAttribute('x2',a.X(tp)); aLine.setAttribute('opacity',tp>0&&tp<BURN?1:0);
+  }
+  let aRun=null;
+  $('aGo').onclick=()=>{ if(aRun)cancelAnimationFrame(aRun); if(reduce){setFill(BURN);return;} const s=performance.now();
+    const tick=n=>{const tp=Math.min(BURN,(n-s)/3000*BURN);setFill(tp);if(tp<BURN)aRun=requestAnimationFrame(tick);};aRun=requestAnimationFrame(tick);};
+  $('aReset').onclick=()=>{if(aRun)cancelAnimationFrame(aRun);setFill(0);};
+  setFill(0);
+
+  /* ---------- 2. liftoff ---------- */
+  const B=$('cB'), bx=axes(B,thrustAxes);
+  const bGreen=el('path',{fill:'var(--good-fill)',stroke:'none'},B);
+  el('path',{class:'curve',d:curvePath(bx.X,bx.Y)},B);
+  const bW=el('line',{x1:bx.X(0),x2:bx.X(2),stroke:'var(--weight)','stroke-width':2.5},B);
+  const bWt=el('text',{x:bx.X(2)-4,class:'ax','text-anchor':'end',style:'fill:var(--weight);font-weight:500'},B,'weight');
+  function liftoff(){
+    const g=+$('wM').value, W=g/1000*9.81, yW=bx.Y(W);
+    $('wMo').textContent=g+' g'; $('wW').textContent=W.toFixed(2)+' N';
+    bW.setAttribute('y1',yW); bW.setAttribute('y2',yW); bWt.setAttribute('y',yW-6);
+    let d='', on=false, dur=0;
+    for(let t=0;t<=BURN;t+=0.002){const f=F(t);
+      if(f>W){ if(!on){d+=`M${bx.X(t).toFixed(1)} ${yW.toFixed(1)}`;on=true;} d+=`L${bx.X(t).toFixed(1)} ${bx.Y(f).toFixed(1)}`; dur+=0.002; }
+      else if(on){ d+=`L${bx.X(t).toFixed(1)} ${yW.toFixed(1)}Z`; on=false; } }
+    if(on)d+=`L${bx.X(BURN)} ${yW}Z`;
+    bGreen.setAttribute('d',d);
+    $('wDur').textContent=dur.toFixed(2)+' s'; $('wR').textContent=(14.1/W).toFixed(1)+' : 1';
+    const v=$('wV');
+    if(g<=113){v.textContent='OK: within Estes\'s 113 g maximum for this motor. Thrust beats weight for almost the whole burn.';v.className='verdict good';}
+    else if(dur>1){v.textContent='Too heavy for a C6: over Estes\'s 113 g limit. It would leave the pad slowly and could tip over in the wind.';v.className='verdict bad';}
+    else {v.textContent='Far too heavy: the rocket only has enough push during the short spike, then the weight wins. It would barely leave the pad.';v.className='verdict bad';}
+  }
+  $('wM').oninput=liftoff; liftoff();
+
+  /* ---------- 3. flight ---------- */
+  const C=$('cC'), c=axes(C,{W:480,H:340,l:52,r:12,t:14,b:40,xmax:14,ymax:350,xs:2,ys:50,xl:'time (s)',yl:'height (m)',xfmt:x=>x.toFixed(0),yfmt:y=>y.toFixed(0)});
+  const cGhost=el('path',{fill:'none',stroke:'var(--line)','stroke-width':2,'stroke-dasharray':'5 5'},C);
+  const cPath=el('path',{class:'curve'},C);
+  const mk=(color)=>{const g=el('g',{opacity:0},C);el('circle',{r:5,fill:color},g);const t=el('text',{class:'ax',style:'font-weight:500;fill:'+color},g);return {g,t};};
+  const mBurn=mk('var(--accent)'), mTop=mk('var(--curve)'), mEj=mk('var(--weight)');
+  // sky lane
+  const S=$('sky'), groundY=320, skyY=h=>groundY-h/350*300;
+  el('rect',{x:0,y:0,width:120,height:340,rx:8,fill:'var(--sky)'},S);
+  el('rect',{x:0,y:groundY,width:120,height:20,fill:'var(--ground)'},S);
+  for(let h=100;h<=300;h+=100){el('line',{x1:6,x2:18,y1:skyY(h),y2:skyY(h),stroke:'var(--muted)'},S);el('text',{x:22,y:skyY(h)+4,class:'ax'},S,h+' m');}
+  const rocket=el('g',{},S);
+  el('path',{d:'M0 -14 L5 -6 L5 10 L9 16 L-9 16 L-5 10 L-5 -6 Z',fill:'var(--ink)'},rocket);
+  const flame=el('path',{d:'M-4 16 L0 30 L4 16 Z',fill:'var(--accent)',opacity:0},rocket);
+  const chute=el('g',{opacity:0},rocket);
+  el('path',{d:'M-16 -34 Q0 -56 16 -34 Z',fill:'var(--weight)'},chute);
+  el('path',{d:'M-16 -34 L0 -14 M16 -34 L0 -14',stroke:'var(--muted)','stroke-width':1},chute);
+  let delay=5;
+
+  function simulate(dry,del){
+    const Ar=Math.PI*0.0125**2, k=0.5*1.225*0.75*Ar, g=9.81, dt=0.001, ej=BURN+del;
+    let t=0,h=0,v=0,I=0, out=[], top={h:0,t:0}, vej=null, hej=null, burnH=0;
+    while(t<=14){
+      const f=F(t); I+=f*dt;
+      const m=dry+0.024-0.011*Math.min(1,I/ITOT);
+      if(t<ej){ let a=(f-m*g-k*v*Math.abs(v))/m; if(h<=0&&v<=0&&a<0)a=0; v+=a*dt; }
+      else { if(vej===null){vej=v;hej=h;} v+=(-4-v)*Math.min(1,dt*2); }
+      h=Math.max(0,h+v*dt); t+=dt;
+      if(h>top.h){top={h,t};} if(Math.abs(t-BURN)<dt/2)burnH=h;
+      if(Math.round(t*1000)%20===0) out.push([t,h]);
+    }
+    return {out,top,ej,vej,hej,burnH};
+  }
+  let flight=null, fRun=null;
+  function place(m,x,y,label,anchorLeft){m.g.setAttribute('opacity',1);m.g.setAttribute('transform',`translate(${x},${y})`);m.t.textContent=label;m.t.setAttribute('x',anchorLeft?8:-8);m.t.setAttribute('y',-8);m.t.setAttribute('text-anchor',anchorLeft?'start':'end');}
+  function drawUpTo(tp){
+    const pts=flight.out.filter(p=>p[0]<=tp); let d='';
+    pts.forEach(p=>{d+=(d?'L':'M')+c.X(p[0]).toFixed(1)+' '+c.Y(p[1]).toFixed(1);}); cPath.setAttribute('d',d);
+    const cur=pts.length?pts[pts.length-1]:[0,0];
+    rocket.setAttribute('transform',`translate(60,${skyY(cur[1])-16})`);
+    flame.setAttribute('opacity',tp<BURN&&tp>0?1:0); chute.setAttribute('opacity',tp>=flight.ej?1:0);
+    if(tp>=BURN) place(mBurn,c.X(BURN),c.Y(flight.burnH),'burnout',true); else mBurn.g.setAttribute('opacity',0);
+    if(tp>=flight.top.t) place(mTop,c.X(flight.top.t),c.Y(flight.top.h),'top',false); else mTop.g.setAttribute('opacity',0);
+    if(tp>=flight.ej) place(mEj,c.X(flight.ej),c.Y(flight.hej),'parachute',true); else mEj.g.setAttribute('opacity',0);
+  }
+  function compute(){
+    const dry=+$('fM').value/1000; $('fMo').textContent=Math.round(dry*1000)+' g';
+    flight=simulate(dry,delay);
+    let d=''; flight.out.forEach(p=>{d+=(d?'L':'M')+c.X(p[0]).toFixed(1)+' '+c.Y(p[1]).toFixed(1);}); cGhost.setAttribute('d',d);
+    $('fAp').textContent=flight.top.h.toFixed(0)+' m'; $('fTa').textContent=flight.top.t.toFixed(1)+' s';
+    $('fTe').textContent=flight.ej.toFixed(1)+' s';
+    const ve=flight.vej; $('fVe').textContent=Math.abs(ve).toFixed(0)+' m/s '+(ve>1?'up':ve<-1?'down':'');
+    const v=$('fV'), total=Math.round(dry*1000)+24;
+    if(ve>8){v.textContent=`Too early: the parachute opens while the rocket is still climbing at ${ve.toFixed(0)} m/s. It can rip or tangle. Pick a longer delay.`;v.className='verdict bad';}
+    else if(ve<-8){v.textContent=`Too late: the rocket is already falling at ${(-ve).toFixed(0)} m/s when the parachute opens. Pick a shorter delay.`;v.className='verdict bad';}
+    else {v.textContent=`Good timing: the parachute opens near the top, moving only ${Math.abs(ve).toFixed(0)} m/s.`;v.className='verdict good';}
+    if(total>113){v.textContent+=` Note: ${total} g with the motor is over the 113 g limit for a C6.`;}
+    drawUpTo(14);
+  }
+  function setDelay(d){delay=d;['d3','d5','d7'].forEach(id=>$(id).setAttribute('aria-pressed',id==='d'+d));compute();}
+  $('d3').onclick=()=>setDelay(3); $('d5').onclick=()=>setDelay(5); $('d7').onclick=()=>setDelay(7);
+  $('fM').oninput=compute;
+  $('fGo').onclick=()=>{ if(fRun)cancelAnimationFrame(fRun); if(reduce){drawUpTo(14);return;}
+    const s=performance.now(); const tick=n=>{const tp=Math.min(14,(n-s)/1000*1.6);drawUpTo(tp);if(tp<14)fRun=requestAnimationFrame(tick);}; fRun=requestAnimationFrame(tick);};
+  compute();
+})();
+</script>
+
+</body></html>

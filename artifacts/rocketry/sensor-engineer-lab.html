@@ -1,0 +1,562 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sensor Engineer Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a lab bench. The step card sits on the left, the two instruments stay in view on the right; on a phone the instruments come first, then the card. */
+:root {
+  --bg: #eef0ec;
+  --surface: #fbfcfa;
+  --ink: #1b2420;
+  --muted: #56625c;
+  --rule: #d4dad5;
+  --accent: #0b6e66;
+  --accent-soft: #dcefeb;
+  --why: #f4efe3;
+  --why-ink: #5a4a22;
+  --key-bg: #f2f3f0;
+  --key-edge: #b9c1bb;
+  /* instrument screens look the same in both themes */
+  --vfd-bg: #08110f;
+  --vfd-fg: #63f2d4;
+  --vfd-dim: #2b6b5e;
+  --scope-bg: #0b0e13;
+  --scope-grid: #2a323d;
+  --scope-axis: #46505d;
+  --trace: #f5d547;
+  --scope-text: #d7dde5;
+  --scope-blue: #5aa2ff;
+  --scope-orange: #ff9b45;
+  --display: "Archivo", "Arial Narrow", Arial, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", Arial, sans-serif;
+  --mono: "JetBrains Mono", "DejaVu Sans Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111614; --surface: #18201d; --ink: #e4ebe7; --muted: #9aa8a1; --rule: #2c3833;
+    --accent: #4fd1bf; --accent-soft: #173a35; --why: #2a2517; --why-ink: #e6d4a6;
+    --key-bg: #222c28; --key-edge: #3c4a44; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111614; --surface: #18201d; --ink: #e4ebe7; --muted: #9aa8a1; --rule: #2c3833;
+  --accent: #4fd1bf; --accent-soft: #173a35; --why: #2a2517; --why-ink: #e6d4a6;
+  --key-bg: #222c28; --key-edge: #3c4a44; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.55; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 56px; display: flex; flex-direction: column; gap: 22px; }
+header { display: flex; flex-direction: column; gap: 6px; }
+.eyebrow { font-family: var(--display); font-stretch: 85%; font-weight: 700; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--display); font-stretch: 78%; font-weight: 800; font-size: clamp(34px, 5vw, 54px); line-height: 1.02; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.sub { color: var(--muted); max-width: 70ch; margin: 0; }
+/* step strip */
+.strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.strip button { flex: none; font-family: var(--mono); font-size: 13px; min-width: 40px; height: 36px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--rule); background: var(--surface); color: var(--muted); cursor: pointer; }
+.strip button[aria-current="step"] { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; }
+.strip button.done { color: var(--ink); border-color: var(--key-edge); }
+.strip button:focus-visible, .nav button:focus-visible, .rounds button:focus-visible, .reveal:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+/* bench */
+.bench { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+@media (min-width: 980px) { .bench { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: start; } .instruments { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); order: 2; } }
+.instruments { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.meta { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.stepno { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.time { font-family: var(--mono); font-size: 12px; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 999px; }
+h2 { font-family: var(--display); font-stretch: 82%; font-weight: 750; font-size: clamp(26px, 3.2vw, 34px); line-height: 1.08; margin: 0; text-wrap: balance; }
+.goal { margin: 0; font-size: 18px; }
+.block { display: flex; flex-direction: column; gap: 6px; }
+.block h3 { font-family: var(--display); font-stretch: 85%; font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0; display: flex; align-items: center; gap: 8px; }
+.block h3 .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.dot.d-gen { background: var(--vfd-fg); box-shadow: 0 0 0 2px var(--vfd-dim); }
+.dot.d-scope { background: var(--trace); box-shadow: 0 0 0 2px #8a7516; }
+.dot.d-see { background: var(--accent); }
+.block ol, .block ul { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+.block p { margin: 0; }
+.key { font-family: var(--display); font-stretch: 88%; font-weight: 650; font-size: 0.86em; white-space: nowrap; background: var(--key-bg); border: 1px solid var(--key-edge); border-bottom-width: 2px; border-radius: 5px; padding: 0 6px; }
+.val { font-family: var(--mono); font-size: 0.9em; white-space: nowrap; color: var(--accent); font-weight: 600; }
+.say { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; font-style: italic; color: var(--ink); }
+.why { background: var(--why); color: var(--why-ink); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
+.why h3 { color: var(--why-ink); }
+.nav { display: flex; justify-content: space-between; gap: 12px; padding-top: 4px; }
+.nav button { font-family: var(--display); font-stretch: 88%; font-weight: 700; font-size: 16px; padding: 10px 18px; border-radius: 10px; border: 1px solid var(--key-edge); background: var(--surface); color: var(--ink); cursor: pointer; }
+.nav button.primary { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.nav button:disabled { opacity: 0.4; cursor: default; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+.tablebox { overflow-x: auto; }
+th, td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--display); font-stretch: 88%; font-weight: 700; color: var(--muted); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.rounds { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.rounds button, .reveal { font-family: var(--display); font-stretch: 88%; font-weight: 700; font-size: 15px; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--key-edge); background: var(--key-bg); color: var(--ink); cursor: pointer; }
+.rounds button[aria-pressed="true"] { background: var(--accent); color: var(--surface); border-color: var(--accent); }
+.reveal { margin-left: auto; }
+/* generator */
+.gen { background: #b9bbb3; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 -3px 0 #8e9089; }
+.gen-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-family: var(--display); font-stretch: 80%; font-weight: 700; color: #2e322f; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; flex-wrap: wrap; }
+.vfd { background: var(--vfd-bg); border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.vfd-main { font-family: var(--mono); color: var(--vfd-fg); font-size: clamp(22px, 3.4vw, 32px); letter-spacing: 0.06em; text-shadow: 0 0 8px rgba(99, 242, 212, 0.45); white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.vfd-ann { display: flex; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; color: var(--vfd-dim); text-transform: uppercase; letter-spacing: 0.08em; }
+.vfd-ann span.on { color: var(--vfd-fg); text-shadow: 0 0 6px rgba(99, 242, 212, 0.4); }
+.gen-row { display: flex; gap: 6px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: #1f2421; }
+.gen-row span { background: #e3e4de; border-radius: 4px; padding: 2px 7px; }
+/* scope */
+.scope { background: #1a1d22; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.scope-top { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--display); font-stretch: 85%; font-weight: 700; color: #c9ced6; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; gap: 8px; flex-wrap: wrap; }
+.screen { position: relative; width: 100%; max-width: 100%; aspect-ratio: 5 / 4; background: var(--scope-bg); border-radius: 6px; overflow: hidden; }
+.screen canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.badges { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none; }
+.badge { font-family: var(--mono); font-size: 11px; color: var(--scope-text); background: rgba(22, 27, 34, 0.92); border: 1px solid #39424e; border-radius: 4px; padding: 2px 6px; white-space: nowrap; }
+.badge.ch1 { border-color: var(--trace); color: var(--trace); }
+.badge.trig { border-color: var(--scope-orange); color: var(--scope-orange); }
+.badge.state { border-color: var(--scope-blue); color: var(--scope-blue); }
+.meas { position: absolute; right: 8px; top: 8px; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
+.meas .badge { font-size: 12px; }
+.caption { color: var(--muted); font-size: 14px; margin: 0; }
+.legend { color: var(--muted); font-size: 13px; margin: 0; font-family: var(--mono); }
+@media (max-width: 520px) { .card { padding: 18px; } body { font-size: 16px; } }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Rocket Lab · Oct 21 · HP 33120A + Tektronix 2 Series</div>
+    <h1>Sensor Engineer Lab</h1>
+    <p class="sub">Follow it one step at a time. Each step says what to press on each instrument, what the scope should look like (the picture on the right updates), and why the skill matters later in her internship.</p>
+  </header>
+
+  <nav class="strip" id="strip" aria-label="Steps"></nav>
+
+  <div class="bench">
+    <section class="instruments" aria-label="What the instruments should show">
+      <div class="gen">
+        <div class="gen-top"><span>HP 33120A · Function generator</span><span id="genNote">Output → Scope Ch1</span></div>
+        <div class="vfd">
+          <div class="vfd-main" id="vfd">130.400,00 KHz~</div>
+          <div class="vfd-ann" id="ann"></div>
+        </div>
+        <div class="gen-row" id="genRow"></div>
+      </div>
+      <div class="scope">
+        <div class="scope-top"><span>Tektronix 2 Series · Channel 1</span><span id="scopeMode">Auto</span></div>
+        <div class="screen">
+          <canvas id="cv" role="img" aria-label="Simulated oscilloscope screen"></canvas>
+          <div class="meas" id="meas"></div>
+          <div class="badges" id="badges"></div>
+        </div>
+      </div>
+      <p class="caption" id="caption"></p>
+      <p class="legend">Simulation of what a correct setup shows. Your screen may show a few more grid boxes; count boxes, not pixels.</p>
+    </section>
+
+    <article class="card" id="card" aria-live="polite"></article>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var K = function (t) { return '<span class="key">' + t + '</span>'; };
+  var V = function (t) { return '<span class="val">' + t + '</span>'; };
+
+  var ROUNDS = [
+    { name: "Round 1 · easy", shape: "square", f: 500, vpp: 2, off: 0, vdiv: 0.5, tdiv: 0.001, trig: 0, answer: ["Square", "500 Hz", "2 Vpp", "0 V"], disp: "500.000,0 Hz" },
+    { name: "Round 2", shape: "triangle", f: 2500, vpp: 3, off: 1, vdiv: 1, tdiv: 0.0002, trig: 1, answer: ["Triangle", "2.5 kHz", "3 Vpp", "+1 V"], disp: "2.500,000 KHz" },
+    { name: "Round 3 · hard", shape: "sine", f: 60, vpp: 0.5, off: -0.5, vdiv: 0.2, tdiv: 0.004, trig: -0.5, answer: ["Sine", "60 Hz", "0.5 Vpp", "−0.5 V"], disp: "60.000,00 Hz" }
+  ];
+
+  var STEPS = [
+    {
+      title: "Connect and reset", time: "5 min",
+      goal: "Start from a known state, with the cable in the right jack.",
+      gen: ["Press " + K("Power") + " (bottom left) to turn it on.", "Check the cable is on " + K("OUTPUT") + ", the lower jack beside 50 Ω / 42 V Max. " + K("SYNC") + " is the upper jack; we don't use it today."],
+      scope: ["Plug the other end into " + K("Channel 1") + " (yellow).", "Press " + K("Default Setup") + ". It clears old settings and the leftover measurement.", "If the blue digital lines (D15–D0) are still showing, double-tap the " + K("D15–D0") + " badge and turn its display off."],
+      see: "A yellow line that's flat or a blurry band. That's expected: nothing is set yet. Your photo showed exactly this: a 130.4 kHz signal on a 4 ms/div screen.",
+      why: "Every hot fire at our test stand starts with a checklist that puts each instrument in a known state. \"Reset first, then measure\" is the habit behind every test procedure she will ever write, including her own on Mar 3.",
+      sim: { shape: "sine", f: 130400, vpp: 0.1, off: 0, disp: "130.400,00 KHz~", ann: ["Offset"], highz: false, vdiv: 0.1, tdiv: 0.004, trig: 0, mode: "flat", caption: "Before setup: Ch1 at 100 mV/div, 4 ms/div. A flat line means no usable signal is reaching Channel 1 yet." }
+    },
+    {
+      title: "Make the numbers honest: High Z", time: "3 min",
+      goal: "Make the generator's display match what the scope will show.",
+      gen: ["Press " + K("Shift") + " (blue), then " + K("Menu On/Off") + ".", "Turn the knob until the display reads " + V("D: SYS MENU") + ". Press " + K("∨") + ".", "It shows " + V("1: OUT TERM") + ". Press " + K("∨") + " again.", "Turn the knob to " + V("HIGH Z") + ", then press " + K("Enter") + "."],
+      scope: ["Nothing to do on the scope yet."],
+      see: "The display shows HIGH Z, then returns to normal. This setting goes back to 50 Ω when the generator is switched off, so redo it each session.",
+      say: "The generator thought it was talking to a 50-ohm instrument. Our scope is a million ohms, so the real voltage was double what the display said. We just told it the truth.",
+      why: "Every sensor and data input lists its assumptions in a datasheet: supply voltage, load, range. When she wires her load cell to the HX711 amplifier in February, reading those assumptions is the difference between a right number and a wrong one.",
+      sim: { shape: "sine", f: 130400, vpp: 0.1, off: 0, disp: "HIGH Z", ann: ["Shift", "Menu"], highz: true, vdiv: 0.1, tdiv: 0.004, trig: 0, mode: "flat", caption: "The scope hasn't changed yet. Only the generator's setting did." }
+    },
+    {
+      title: "Your first wave", time: "10 min",
+      goal: "A clean 1 kHz sine wave on the screen. She presses the buttons; you guide.",
+      gen: ["Press " + K("~") + " (sine, first key in the top row).", "Press " + K("Freq") + " and turn the knob to " + V("1.000 kHz") + ". The " + K("<") + " " + K(">") + " arrows choose which digit the knob changes.", "Press " + K("Ampl") + " and set " + V("2.000 Vpp") + ". Press " + K("Offset") + " and set " + V("0.000 V") + ".", "Shortcut: " + K("Enter Number") + ", type the digits, then press the unit key (the arrow keys double as MHz / kHz / Hz and Vpp)."],
+      scope: ["Press " + K("Autoset") + ".", "Then set the vertical " + K("Scale") + " knob to " + V("500 mV/div") + " and the horizontal " + K("Scale") + " knob to " + V("200 µs/div") + ", so your screen matches the picture."],
+      see: "Two full waves across the screen, 4 boxes tall, centered on the middle line.",
+      why: "This is the \"hello world\" of measuring things. Every sensor check on our rig starts the same way: put in a known signal and see it on a screen.",
+      sim: { shape: "sine", f: 1000, vpp: 2, off: 0, disp: "1.000,000 KHz~", ann: ["High Z"], highz: true, vdiv: 0.5, tdiv: 0.0002, trig: 0, mode: "normal", caption: "1 kHz sine, 2 Vpp. Vertical 500 mV per box, horizontal 200 µs per box: 2 waves, 4 boxes tall." }
+    },
+    {
+      title: "Read it by hand", time: "10 min",
+      goal: "She works out the signal from the grid before the scope tells her.",
+      gen: ["No changes."],
+      scope: ["Height: count boxes from the bottom of the wave to the top. " + V("4 boxes × 0.5 V = 2.0 Vpp") + ".", "Time: count boxes for one full wave. " + V("5 boxes × 200 µs = 1,000 µs = 1 ms") + ".", "Frequency = 1 ÷ period = 1 ÷ 0.001 s = " + V("1,000 Hz = 1 kHz") + "."],
+      see: "Her numbers: about 2 Vpp and 1 kHz.",
+      say: "If one wave took 10 boxes, what would the frequency be? (500 Hz.)",
+      why: "Engineers always know roughly what a number should be before they read it. That instinct catches a broken sensor or a wrong setting before it ruins a test, and her thrust results in March need the same \"does this make sense?\" check.",
+      sim: { shape: "sine", f: 1000, vpp: 2, off: 0, disp: "1.000,000 KHz~", ann: ["High Z"], highz: true, vdiv: 0.5, tdiv: 0.0002, trig: 0, mode: "normal", grid: true, caption: "Count it: 4 boxes tall, 5 boxes per wave." }
+    },
+    {
+      title: "Let the scope measure", time: "5 min",
+      goal: "Check her hand count against the scope's automatic numbers.",
+      gen: ["No changes."],
+      scope: ["Tap " + K("Measure") + " on the right side of the screen.", "Pick " + K("Ch1") + ", then add " + K("Frequency") + ", " + K("Peak-to-Peak") + " and " + K("Mean") + "."],
+      see: "Three readouts: Frequency 1.000 kHz, Pk-Pk about 2.0 V, Mean about 0 V. Then she works out the percent difference: (scope − hers) ÷ scope × 100.",
+      why: "Our data software does this for every sensor, many times a second. She learns to trust automatic numbers only after checking one by hand.",
+      sim: { shape: "sine", f: 1000, vpp: 2, off: 0, disp: "1.000,000 KHz~", ann: ["High Z"], highz: true, vdiv: 0.5, tdiv: 0.0002, trig: 0, mode: "normal", measures: true, caption: "Measurements appear as badges. Mean is the offset." }
+    },
+    {
+      title: "Faster wave, new time window", time: "10 min",
+      goal: "See that the signal and our view of it are two different things.",
+      gen: ["Press " + K("Freq") + " and set " + V("10.000 kHz") + ". The screen fills with about 20 squeezed waves."],
+      scope: ["Turn the horizontal " + K("Scale") + " to " + V("20 µs/div") + ". Two waves again."],
+      see: "Two waves, 4 boxes tall, at 20 µs per box. Frequency now reads 10.00 kHz.",
+      say: "Did the signal change, or only our view? (Only the view.)",
+      why: "Choosing the time window is a real test decision. Ignition happens in milliseconds; filling a tank takes minutes. Pick the wrong window and you miss the event.",
+      sim: { shape: "sine", f: 10000, vpp: 2, off: 0, disp: "10.000,000 KHz~", ann: ["High Z"], highz: true, vdiv: 0.5, tdiv: 0.00002, trig: 0, mode: "normal", measures: true, caption: "10 kHz at 20 µs per box." }
+    },
+    {
+      title: "Bigger signal, right range", time: "5 min",
+      goal: "Pick a vertical scale that fits the signal without cutting it off.",
+      gen: ["Press " + K("Ampl") + " and set " + V("4.000 Vpp") + ". At 500 mV/div the wave fills the whole screen."],
+      scope: ["Turn the vertical " + K("Scale") + " to " + V("1 V/div") + "."],
+      see: "The wave is 4 boxes tall again, now at 1 V per box. Pk-Pk reads about 4.0 V.",
+      why: "This is choosing a sensor's range. A 1,000 psi sensor on a 50 psi line loses detail; a 50 psi sensor on a 1,000 psi line maxes out. Engineers pick ranges so the signal uses most of the scale without clipping.",
+      sim: { shape: "sine", f: 10000, vpp: 4, off: 0, disp: "4.000 VPP", ann: ["High Z"], highz: true, vdiv: 1, tdiv: 0.00002, trig: 0, mode: "normal", measures: true, caption: "4 Vpp at 1 V per box." }
+    },
+    {
+      title: "Shift it up: offset", time: "5 min",
+      goal: "See what an offset does, and connect it to zeroing a sensor.",
+      gen: ["Press " + K("Offset") + " and set " + V("+1.000 V") + "."],
+      scope: ["No changes."],
+      see: "The whole wave moves up one box and now runs from −1 V to +3 V. Mean reads about 1.00 V.",
+      say: "Nothing about the wave changed except where it sits.",
+      why: "Real sensors rarely read exactly zero at rest. Before every test we tare (zero) them. In February she'll tare her load cell before the motor fires.",
+      sim: { shape: "sine", f: 10000, vpp: 4, off: 1, disp: "+1.000 VDC", ann: ["High Z", "Offset"], highz: true, vdiv: 1, tdiv: 0.00002, trig: 1, mode: "normal", measures: true, caption: "Same wave, shifted up 1 V. The ground marker on the left still shows 0 V." }
+    },
+    {
+      title: "Shapes", time: "5 min",
+      goal: "Recognize the shapes engineers see on test day.",
+      gen: ["Press the square key (second in the top row), then triangle (third), then ramp (fourth)."],
+      scope: ["Press " + K("Autoset") + " if a shape looks odd."],
+      see: "The picture shows the square wave. Square = on/off. Triangle and ramp = steady rise and fall. Sine = vibration.",
+      say: "A valve command looks like this square wave: closed, then open. A tank filling with pressure looks like the ramp.",
+      why: "Recognizing a shape tells you what a system is doing. On test day a valve command should look square and crisp, and a tank pressure should rise smoothly.",
+      sim: { shape: "square", f: 10000, vpp: 4, off: 1, disp: "10.000,000 KHz", ann: ["High Z", "Square"], highz: true, vdiv: 1, tdiv: 0.00002, trig: 1, mode: "normal", measures: true, caption: "Square wave, 10 kHz, −1 V to +3 V." }
+    },
+    {
+      title: "Trigger: freeze or chaos", time: "5 min",
+      goal: "Show what the trigger does by breaking it on purpose.",
+      gen: ["Press " + K("~") + " to go back to sine."],
+      scope: ["Turn the trigger " + K("Level") + " knob up until the orange level marker sits above the top of the wave (above +3 V). The picture starts sliding and smearing.", "Then press the " + K("Level") + " knob in (Set to 50%). The level snaps to the middle of the wave and the picture freezes."],
+      see: "First a smeared, moving wave (shown here). After Set to 50%, a steady wave again.",
+      say: "The trigger tells the scope when to start drawing. If the wave never reaches the level, the scope can't line the pictures up.",
+      why: "Triggering is how we arm a test: start recording when pressure crosses a value or when the igniter fires. It's the same idea she'll use to start logging her motor test in March.",
+      sim: { shape: "sine", f: 10000, vpp: 4, off: 1, disp: "10.000,000 KHz~", ann: ["High Z"], highz: true, vdiv: 1, tdiv: 0.00002, trig: 3.6, mode: "unstable", measures: false, caption: "Trigger level above the wave: the scope free-runs and the picture won't hold still." }
+    },
+    {
+      title: "Mystery Signal Challenge", time: "25 min", mystery: true,
+      goal: "The main task. She identifies a secret signal using only the scope.",
+      gen: ["Tape paper over the generator display or turn it away from her.", "Set the round's shape, frequency, amplitude and offset (use the round buttons below to see the settings, and use Reveal answers to check)."],
+      scope: ["She presses " + K("Autoset") + ", then finds 4 things by counting boxes: shape, frequency, Vpp and offset.", "Then she checks with " + K("Measure") + " (Frequency, Peak-to-Peak, Mean). One point per answer within 10%."],
+      see: "The picture shows the round you pick. Keep the answers hidden until she's done.",
+      say: "Round 3 is 60 Hz: the frequency of US wall power. It's the hum that sneaks into sensor wires, and engineers learn to spot it.",
+      why: "This is the actual job of a test engineer: an unknown signal comes in and you describe it accurately. It also builds the confidence she needs for her own data in March.",
+      sim: null
+    },
+    {
+      title: "Pressurize the tank", time: "15 min",
+      goal: "Turn a voltage into a pressure, the way our software reads a transducer.",
+      gen: ["Press the ramp key (fourth in the top row).", "Press " + K("Freq") + ", then " + K("Enter Number") + ", type " + V("0.2") + " and press the Hz unit key. One rise every 5 seconds.", "Set " + K("Ampl") + " " + V("4.000 Vpp") + " and " + K("Offset") + " " + V("+2.000 V") + ". The signal climbs from 0 to 4 V, then resets."],
+      scope: ["Vertical " + K("Scale") + " " + V("1 V/div") + ". Turn the vertical " + K("Position") + " knob down 2 boxes so 0 V sits low on the screen.", "Horizontal " + K("Scale") + " " + V("1 s/div") + ". At slow settings the trace draws live, like a chart recorder."],
+      see: "A line that climbs slowly to 4 V, drops, and climbs again.",
+      say: "Pretend this is a pressure sensor where 0 V = 0 psi and 5 V = 1,000 psi, so psi = 200 × volts. (Practice numbers, not our real sensor.) What is 2.5 V? (500 psi.) What's the highest pressure in this test? (4 V = 800 psi.) What if the empty tank reads 0.3 V? (That's an offset. Tare it.)",
+      why: "Our software converts every pressure transducer's volts into psi with a straight line like this one. In February she'll build her own line that turns load-cell readings into newtons.",
+      sim: { shape: "ramp", f: 0.2, vpp: 4, off: 2, disp: "200.000,0 mHz", ann: ["High Z", "Ramp"], highz: true, vdiv: 1, tdiv: 1, trig: 2, pos: -2, mode: "roll", measures: false, caption: "Ramp from 0 to 4 V every 5 s, drawn live at 1 s per box." }
+    },
+    {
+      title: "Catch the ignition", time: "10 min",
+      goal: "Capture a one-time event with Single/Seq.",
+      gen: ["Press the square key.", "Set " + K("Freq") + " " + V("1.000 Hz") + ", " + K("Ampl") + " " + V("3.000 Vpp") + ", " + K("Offset") + " " + V("+1.500 V") + ". It now jumps between 0 V and 3 V once per second, like an igniter command."],
+      scope: ["Vertical " + K("Scale") + " " + V("1 V/div") + ", horizontal " + K("Scale") + " " + V("100 ms/div") + ".", "Trigger on " + K("Ch1") + ", rising edge. Turn " + K("Level") + " to " + V("1.5 V") + ".", "Press " + K("Single/Seq") + "."],
+      see: "The scope waits, catches the jump at the center line, and stops. The left half is before \"ignition\"; the right half is after.",
+      say: "We get one chance on test day. The scope waits for the moment and keeps what happened just before it.",
+      why: "This is how we record a hot fire: arm, wait, capture the first moments. The data from just before the trigger shows what was happening right before ignition, which is where problems hide.",
+      sim: { shape: "square", f: 1, vpp: 3, off: 1.5, disp: "1.000,000 Hz", ann: ["High Z", "Square"], highz: true, vdiv: 1, tdiv: 0.1, trig: 1.5, pos: -1.5, mode: "single", measures: false, caption: "One captured edge, stopped. Trigger at 1.5 V on the rising edge." }
+    },
+    {
+      title: "Wrap up, and what she gained", time: "10 min", summary: true,
+      goal: "Close the session and show her how today's skills come back later.",
+      gen: ["Turn the generator off with " + K("Power") + ". The High Z setting resets on its own."],
+      scope: ["Press the power button. Coil the cable loosely."],
+      see: "She writes her journal entry: 3 things she learned and 1 question. You fill the meeting log row.",
+      why: "",
+      sim: { shape: "sine", f: 1000, vpp: 2, off: 0, disp: "", ann: [], highz: false, vdiv: 0.5, tdiv: 0.0002, trig: 0, mode: "off", caption: "Both instruments off." }
+    }
+  ];
+
+  var SUMMARY = '<div class="block"><h3>Where today\'s skills come back</h3><div class="tablebox"><table>' +
+    '<tr><th>Skill from today</th><th>Where she uses it here</th><th>Beyond the internship</th></tr>' +
+    '<tr><td>Reading volts and time on a grid</td><td>Thrust curve analysis (Mar 17)</td><td>Every college physics and circuits lab</td></tr>' +
+    '<tr><td>Frequency, period, sampling</td><td>Setting the HX711 to 80 samples/s (Feb 10)</td><td>Audio, vibration, communications</td></tr>' +
+    '<tr><td>Ranges, offset, tare</td><td>Calibrating her load cell (Feb 10)</td><td>Any job that uses sensors</td></tr>' +
+    '<tr><td>Triggering and single capture</td><td>Recording her motor test (Mar 10)</td><td>Test engineering</td></tr>' +
+    '<tr><td>Volts to real units</td><td>Load-cell readings to newtons</td><td>Instrumentation and data science</td></tr>' +
+    '<tr><td>Reset-first checklist</td><td>Her test plan (Mar 3 gate)</td><td>Aerospace test procedures</td></tr>' +
+    '</table></div></div>' +
+    '<div class="why"><h3>Line for her résumé</h3><p>Measured and characterized electrical signals with an oscilloscope and function generator at Morgan State University\'s rocket lab.</p></div>';
+
+  var state = { i: 0, round: 0, revealed: false };
+  try { var saved = JSON.parse(localStorage.getItem("sensorLab") || "null"); if (saved && typeof saved.i === "number" && saved.i >= 0 && saved.i < STEPS.length) state.i = saved.i; } catch (e) {}
+
+  var strip = document.getElementById("strip");
+  var card = document.getElementById("card");
+
+  function buildStrip() {
+    strip.innerHTML = "";
+    STEPS.forEach(function (s, k) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.id = "step-btn-" + (k + 1);
+      b.textContent = String(k + 1);
+      b.title = s.title;
+      b.setAttribute("aria-label", "Step " + (k + 1) + ": " + s.title);
+      if (k === state.i) b.setAttribute("aria-current", "step");
+      if (k < state.i) b.className = "done";
+      b.addEventListener("click", function () { go(k); });
+      strip.appendChild(b);
+    });
+  }
+
+  function list(items, ordered) {
+    var tag = ordered ? "ol" : "ul";
+    return "<" + tag + ">" + items.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</" + tag + ">";
+  }
+
+  function render() {
+    var s = STEPS[state.i];
+    var html = '<div class="meta"><span class="stepno">Step ' + (state.i + 1) + " of " + STEPS.length + '</span><span class="time">' + s.time + "</span></div>" +
+      "<h2>" + s.title + "</h2>" +
+      '<p class="goal">' + s.goal + "</p>" +
+      '<div class="block"><h3><span class="dot d-gen"></span>On the generator</h3>' + list(s.gen, s.gen.length > 1) + "</div>" +
+      '<div class="block"><h3><span class="dot d-scope"></span>On the scope</h3>' + list(s.scope, s.scope.length > 1) + "</div>";
+    if (s.mystery) {
+      var r = ROUNDS[state.round];
+      html += '<div class="block"><h3>Rounds</h3><div class="rounds">' +
+        ROUNDS.map(function (rr, k) { return '<button type="button" id="round-' + (k + 1) + '" data-round="' + k + '" aria-pressed="' + (k === state.round) + '">' + rr.name + "</button>"; }).join("") +
+        '<button type="button" class="reveal" id="reveal-btn">' + (state.revealed ? "Hide answers" : "Reveal answers") + "</button></div>" +
+        (state.revealed ? '<div class="tablebox"><table><tr><th>Shape</th><th>Frequency</th><th>Amplitude</th><th>Offset</th></tr><tr><td>' + r.answer[0] + '</td><td class="num">' + r.answer[1] + '</td><td class="num">' + r.answer[2] + '</td><td class="num">' + r.answer[3] + "</td></tr></table></div>" : '<p class="caption">Answers hidden. Set the generator to this round\'s values, then reveal them on your screen only when she has written hers.</p>') +
+        '<div class="tablebox"><table><tr><th>Her answer sheet</th><th>Shape</th><th>Freq</th><th>Vpp</th><th>Offset</th><th>Score</th></tr>' +
+        "<tr><td>Round 1</td><td></td><td></td><td></td><td></td><td>/4</td></tr><tr><td>Round 2</td><td></td><td></td><td></td><td></td><td>/4</td></tr><tr><td>Round 3</td><td></td><td></td><td></td><td></td><td>/4</td></tr></table></div></div>";
+    }
+    html += '<div class="block"><h3><span class="dot d-see"></span>You should see</h3><p>' + s.see + "</p></div>";
+    if (s.say) html += '<p class="say">' + s.say + "</p>";
+    if (s.summary) html += SUMMARY;
+    else html += '<div class="why"><h3>Why this matters later</h3><p>' + s.why + "</p></div>";
+    html += '<div class="nav"><button type="button" id="prev-btn"' + (state.i === 0 ? " disabled" : "") + '>Back</button><button type="button" class="primary" id="next-btn"' + (state.i === STEPS.length - 1 ? " disabled" : "") + ">" + (state.i === STEPS.length - 1 ? "Done" : "Next step") + "</button></div>";
+    card.innerHTML = html;
+
+    document.getElementById("prev-btn").addEventListener("click", function () { go(state.i - 1); });
+    document.getElementById("next-btn").addEventListener("click", function () { go(state.i + 1); });
+    if (s.mystery) {
+      Array.prototype.forEach.call(card.querySelectorAll("[data-round]"), function (b) {
+        b.addEventListener("click", function () { state.round = Number(b.getAttribute("data-round")); state.revealed = false; render(); });
+      });
+      document.getElementById("reveal-btn").addEventListener("click", function () { state.revealed = !state.revealed; render(); });
+    }
+    buildStrip();
+    setSim();
+  }
+
+  function go(k) {
+    if (k < 0 || k >= STEPS.length) return;
+    state.i = k;
+    try { localStorage.setItem("sensorLab", JSON.stringify({ i: k })); } catch (e) {}
+    render();
+    var cur = document.getElementById("step-btn-" + (k + 1));
+    if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: "nearest", inline: "center" });
+  }
+
+  document.addEventListener("keydown", function (e) {
+    var t = e.target && e.target.tagName;
+    if (t === "INPUT" || t === "TEXTAREA") return;
+    if (e.key === "ArrowRight") go(state.i + 1);
+    if (e.key === "ArrowLeft") go(state.i - 1);
+  });
+
+  /* ---------- instrument simulation ---------- */
+  var cv = document.getElementById("cv");
+  var ctx = cv.getContext("2d");
+  var sim = null;
+  var timer = null;
+  var reduce = false;
+  try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  var cssVar = function (n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); };
+
+  function currentSim() {
+    var s = STEPS[state.i];
+    if (!s.mystery) return s.sim;
+    var r = ROUNDS[state.round];
+    return { shape: r.shape, f: r.f, vpp: r.vpp, off: r.off, disp: state.revealed ? r.disp : "????", ann: ["High Z"], highz: true, vdiv: r.vdiv, tdiv: r.tdiv, trig: r.trig, mode: "normal", measures: state.revealed, caption: r.name + (state.revealed ? ": answers revealed." : ": what she sees after Autoset. Generator display covered.") };
+  }
+
+  function phaseFor(shape, x) {
+    x = Math.max(-1, Math.min(1, x));
+    if (shape === "sine") { var u = Math.asin(x) / (2 * Math.PI); return u < 0 ? u + 1 : u; }
+    if (shape === "square") return 0;
+    if (shape === "triangle") return x >= 0 ? x / 4 : 1 + x / 4;
+    if (shape === "ramp") return (x + 1) / 2;
+    return 0;
+  }
+  function unit(shape, u) {
+    u = u - Math.floor(u);
+    if (shape === "sine") return Math.sin(2 * Math.PI * u);
+    if (shape === "square") return u < 0.5 ? 1 : -1;
+    if (shape === "triangle") return u < 0.25 ? 4 * u : (u < 0.75 ? 2 - 4 * u : 4 * u - 4);
+    if (shape === "ramp") return 2 * u - 1;
+    return 0;
+  }
+
+  function fmtV(v) {
+    var a = Math.abs(v);
+    if (a < 1 && a !== 0) return (v * 1000).toFixed(0) + " mV";
+    return v.toFixed(2).replace("-", "−") + " V";
+  }
+  function fmtDiv(v) { return Math.abs(v) < 1 ? (v * 1000).toFixed(0) + " mV/div" : v.toFixed(0) + " V/div"; }
+  function fmtT(t) {
+    if (t >= 1) return t.toFixed(0) + " s/div";
+    if (t >= 1e-3) return (t * 1e3).toFixed(0) + " ms/div";
+    return (t * 1e6).toFixed(0) + " µs/div";
+  }
+  function fmtF(f) {
+    if (f >= 1000) return (f / 1000).toFixed(f >= 10000 ? 2 : 3) + " kHz";
+    if (f >= 1) return f.toFixed(f >= 100 ? 1 : 2) + " Hz";
+    return (f * 1000).toFixed(0) + " mHz";
+  }
+
+  function setSim() {
+    sim = currentSim();
+    var vfd = document.getElementById("vfd");
+    vfd.textContent = sim.mode === "off" ? "" : sim.disp;
+    var annList = ["High Z", "Offset", "Shift", "Menu", "Square", "Ramp"];
+    document.getElementById("ann").innerHTML = annList.map(function (a) { return '<span class="' + (sim.ann.indexOf(a) >= 0 && sim.mode !== "off" ? "on" : "") + '">' + a + "</span>"; }).join("");
+    var gr = document.getElementById("genRow");
+    if (sim.mode === "off") gr.innerHTML = "<span>Power off</span>";
+    else if (STEPS[state.i].mystery && !state.revealed) gr.innerHTML = "<span>Settings hidden for the challenge</span>";
+    else gr.innerHTML = "<span>Shape: " + sim.shape + "</span><span>Freq: " + fmtF(sim.f) + "</span><span>Ampl: " + sim.vpp.toFixed(3) + " Vpp</span><span>Offset: " + (sim.off >= 0 ? "+" : "−") + Math.abs(sim.off).toFixed(3) + " V</span><span>Load: " + (sim.highz ? "High Z" : "50 Ω") + "</span>";
+    document.getElementById("caption").textContent = sim.caption;
+    var modeTxt = { flat: "Auto", normal: "Auto · Triggered", unstable: "Auto · Not triggered", roll: "Roll", single: "Single · Stopped", off: "Power off" }[sim.mode];
+    document.getElementById("scopeMode").textContent = modeTxt;
+    var badges = "";
+    if (sim.mode !== "off") {
+      badges = '<span class="badge ch1">Ch1 ' + fmtDiv(sim.vdiv) + '</span><span class="badge">H ' + fmtT(sim.tdiv) + "</span>";
+      if (sim.mode !== "roll") badges += '<span class="badge trig">T Ch1 ↑ ' + fmtV(sim.trig) + "</span>";
+      if (sim.mode === "single") badges += '<span class="badge state">Stopped</span>';
+    }
+    document.getElementById("badges").innerHTML = badges;
+    var meas = "";
+    if (sim.measures && sim.mode !== "off") {
+      meas = '<span class="badge">Freq ' + fmtF(sim.f) + '</span><span class="badge">Pk-Pk ' + fmtV(sim.vpp) + '</span><span class="badge">Mean ' + fmtV(sim.off) + "</span>";
+    }
+    document.getElementById("meas").innerHTML = meas;
+    cv.setAttribute("aria-label", "Simulated oscilloscope: " + sim.caption);
+    if (timer) { clearInterval(timer); timer = null; }
+    draw();
+    if (!reduce && (sim.mode === "unstable" || sim.mode === "roll")) timer = setInterval(draw, sim.mode === "roll" ? 50 : 140);
+  }
+
+  function draw() {
+    var rect = cv.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    var W = Math.max(1, Math.round(rect.width * dpr)), H = Math.max(1, Math.round(rect.height * dpr));
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = cssVar("--scope-bg") || "#0b0e13";
+    ctx.fillRect(0, 0, W, H);
+    if (!sim || sim.mode === "off") return;
+    var padT = H * 0.04, padB = H * 0.14, padL = W * 0.05, padR = W * 0.05;
+    var gw = W - padL - padR, gh = H - padT - padB;
+    var nx = 10, ny = 8, dx = gw / nx, dy = gh / ny;
+    var cx = padL + gw / 2, cy = padT + gh / 2;
+    // grid
+    ctx.strokeStyle = cssVar("--scope-grid") || "#2a323d";
+    ctx.lineWidth = 1 * dpr;
+    ctx.setLineDash([2 * dpr, 4 * dpr]);
+    for (var i = 0; i <= nx; i++) { ctx.beginPath(); ctx.moveTo(padL + i * dx, padT); ctx.lineTo(padL + i * dx, padT + gh); ctx.stroke(); }
+    for (var j = 0; j <= ny; j++) { ctx.beginPath(); ctx.moveTo(padL, padT + j * dy); ctx.lineTo(padL + gw, padT + j * dy); ctx.stroke(); }
+    ctx.setLineDash([]);
+    ctx.strokeStyle = cssVar("--scope-axis") || "#46505d";
+    ctx.beginPath(); ctx.moveTo(cx, padT); ctx.lineTo(cx, padT + gh); ctx.moveTo(padL, cy); ctx.lineTo(padL + gw, cy); ctx.stroke();
+    // minor ticks on center axes
+    for (var m = 0; m <= nx * 5; m++) { var mx = padL + m * dx / 5; ctx.beginPath(); ctx.moveTo(mx, cy - 3 * dpr); ctx.lineTo(mx, cy + 3 * dpr); ctx.stroke(); }
+    for (var n2 = 0; n2 <= ny * 5; n2++) { var my = padT + n2 * dy / 5; ctx.beginPath(); ctx.moveTo(cx - 3 * dpr, my); ctx.lineTo(cx + 3 * dpr, my); ctx.stroke(); }
+
+    var pos = sim.pos || 0;
+    var yOf = function (v) { var d = v / sim.vdiv + pos; d = Math.max(-ny / 2, Math.min(ny / 2, d)); return cy - d * dy; };
+    // ground marker
+    var gy = yOf(0);
+    ctx.fillStyle = cssVar("--trace") || "#f5d547";
+    ctx.beginPath(); ctx.moveTo(padL - 2 * dpr, gy - 7 * dpr); ctx.lineTo(padL - 2 * dpr, gy + 7 * dpr); ctx.lineTo(padL + 8 * dpr, gy); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#11151b"; ctx.font = (9 * dpr) + "px " + "JetBrains Mono, monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("1", padL + 1.5 * dpr, gy);
+    // trigger marker
+    if (sim.mode !== "roll" && sim.mode !== "flat") {
+      var ty = cy - Math.max(-ny / 2, Math.min(ny / 2, sim.trig / sim.vdiv + pos)) * dy;
+      ctx.fillStyle = cssVar("--scope-orange") || "#ff9b45";
+      ctx.beginPath(); ctx.moveTo(padL + gw + 2 * dpr, ty - 6 * dpr); ctx.lineTo(padL + gw + 2 * dpr, ty + 6 * dpr); ctx.lineTo(padL + gw - 8 * dpr, ty); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(cx - 6 * dpr, padT); ctx.lineTo(cx + 6 * dpr, padT); ctx.lineTo(cx, padT + 9 * dpr); ctx.closePath(); ctx.fill();
+    }
+    // trace
+    ctx.strokeStyle = cssVar("--trace") || "#f5d547";
+    ctx.lineWidth = 2 * dpr;
+    ctx.lineJoin = "round";
+    var A = sim.vpp / 2;
+    var span = sim.tdiv * nx;
+    var N = Math.min(6000, Math.max(800, Math.round(gw * 2)));
+
+    function trace(phase, alpha, tStart) {
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      for (var k = 0; k <= N; k++) {
+        var x = padL + gw * k / N;
+        var t = tStart + span * k / N;
+        var v = sim.mode === "flat" ? 0 : sim.off + A * unit(sim.shape, sim.f * t + phase);
+        var y = yOf(v);
+        if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    if (sim.mode === "flat") { trace(0, 1, -span / 2); return; }
+    if (sim.mode === "roll") {
+      var now = reduce ? 7.3 : performance.now() / 1000;
+      trace(0, 1, now - span);
+      return;
+    }
+    var base = phaseFor(sim.shape, A ? (sim.trig - sim.off) / A : 0);
+    if (sim.mode === "unstable") {
+      for (var g = 0; g < 5; g++) trace(Math.random(), 0.35, -span / 2);
+      return;
+    }
+    trace(base, 1, -span / 2);
+  }
+
+  var resizeT = null;
+  window.addEventListener("resize", function () { clearTimeout(resizeT); resizeT = setTimeout(draw, 80); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { draw(); });
+
+  render();
+})();
+</script>
+
+</body></html>

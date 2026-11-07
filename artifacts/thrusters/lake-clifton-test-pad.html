@@ -1,0 +1,258 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Lake Clifton Test Pad</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a single drawing-sheet column — status strip, three to-scale drawings, then spec schedules and open items */
+:root{
+  --bg:#f3f4f2; --sheet:#ffffff; --ink:#1b1f22; --muted:#5f676c; --rule:#d9ddda;
+  --accent:#2f5d7c;          /* dimension / annotation blue */
+  --steel:#9a6b1f;           /* anchors, steel */
+  --conc:#e4e5e0; --conc2:#d6d8d2; --apron:#d3dde3; --stone:#c9c3b4; --soil:#ddd3c2;
+  --ok:#2e6b45; --okbg:#e5efe8; --warn:#8a5d12; --warnbg:#f5ecdb; --bad:#9a3b26; --badbg:#f5e3de;
+  --f-disp:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",-apple-system,"Segoe UI",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14181b; --sheet:#1c2125; --ink:#e6e9e7; --muted:#9aa3a8; --rule:#323a3f;
+  --accent:#7fb2d4; --steel:#d9a650;
+  --conc:#3a3f42; --conc2:#45494b; --apron:#33485a; --stone:#4b463c; --soil:#3b342a;
+  --ok:#7cc796; --okbg:#1f3428; --warn:#e0b25e; --warnbg:#3a2f1a; --bad:#ec8f78; --badbg:#3e2420;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14181b; --sheet:#1c2125; --ink:#e6e9e7; --muted:#9aa3a8; --rule:#323a3f;
+  --accent:#7fb2d4; --steel:#d9a650;
+  --conc:#3a3f42; --conc2:#45494b; --apron:#33485a; --stone:#4b463c; --soil:#3b342a;
+  --ok:#7cc796; --okbg:#1f3428; --warn:#e0b25e; --warnbg:#3a2f1a; --bad:#ec8f78; --badbg:#3e2420;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{padding-block:40px 4px;display:flex;flex-direction:column;gap:6px}
+.eyebrow{font:600 12px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 2.4rem/1.05 var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+h2{font:700 1.3rem/1.2 var(--f-disp);margin:0;text-wrap:balance}
+h3{font:600 .95rem/1.3 var(--f-body);margin:14px 0 4px}
+p{margin:0;max-width:68ch}
+.lede{color:var(--muted);font-size:1.02rem}
+.sheet{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:22px 24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.sheet-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--rule);padding-bottom:8px}
+.tag{font:600 11px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.strip div{background:var(--sheet);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.strip .k{font:600 10.5px/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.strip .v{font:600 1.08rem/1.25 var(--f-mono);font-variant-numeric:tabular-nums}
+.strip .s{font-size:.8rem;color:var(--muted)}
+.draw{overflow-x:auto}
+.draw svg{display:block;width:100%;min-width:520px;height:auto}
+.draw svg.fit{min-width:0}
+.cap{font-size:.84rem;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{font:600 10.5px/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 8px;border-bottom:1.5px solid var(--ink)}
+td{padding:7px 8px;border-bottom:1px solid var(--rule);vertical-align:top}
+td.m{font-family:var(--f-mono);font-size:.84rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font:600 10.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:3px}
+.ok{background:var(--okbg);color:var(--ok)} .warn{background:var(--warnbg);color:var(--warn)} .bad{background:var(--badbg);color:var(--bad)}
+.note-box{border-left:3px solid var(--warn);background:var(--warnbg);padding:10px 14px;border-radius:0 4px 4px 0;font-size:.92rem}
+.note-box.bad{border-color:var(--bad);background:var(--badbg)}
+ol.items{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:5px}
+a{color:var(--accent)}
+footer{color:var(--muted);font-size:.82rem}
+/* SVG drawing classes */
+svg text{font-family:var(--f-mono);paint-order:stroke;stroke:var(--sheet);stroke-width:3px;stroke-linejoin:round}
+svg .bubtxt,svg .big,svg .tiny{stroke:none}
+.conc{fill:var(--conc);stroke:var(--ink);stroke-width:1.3}
+.conc2{fill:var(--conc2);stroke:var(--ink);stroke-width:1}
+.apron{fill:var(--apron);stroke:var(--ink);stroke-width:1}
+.curb{fill:var(--conc2);stroke:var(--muted);stroke-width:.8}
+.grate{fill:var(--sheet);stroke:var(--ink);stroke-width:1}
+.slot{stroke:var(--muted);stroke-width:.7}
+.outlet{fill:none;stroke:var(--bad);stroke-width:1.6}
+.pipe{fill:none;stroke:var(--bad);stroke-width:2.2}
+.pvc{fill:var(--bad);opacity:.55}
+.tankplan{fill:none;stroke:var(--bad);stroke-width:1.4;stroke-dasharray:6 3}
+.tank{fill:var(--badbg);stroke:var(--bad);stroke-width:1.4;stroke-dasharray:6 3}
+.pit{fill:var(--soil);opacity:.6}
+.riser{fill:var(--sheet);stroke:var(--bad);stroke-width:1.2}
+.riserS{fill:var(--sheet);stroke:var(--bad);stroke-width:1}
+.tiny{font-size:8px;font-weight:600;fill:var(--bad)}
+.lblbad{font-size:10px;font-weight:600;fill:var(--bad)}
+.stand{fill:none;stroke:var(--accent);stroke-width:.9;stroke-dasharray:5 4}
+.plate{fill:none;stroke:var(--steel);stroke-width:1;stroke-dasharray:3 2}
+.anc{fill:var(--steel)}
+.axis{fill:none;stroke:var(--accent);stroke-width:1.2}
+.axisdot{fill:var(--accent)}
+.cut{stroke:var(--ink);stroke-width:1;stroke-dasharray:14 4 2 4}
+.bubble{fill:var(--sheet);stroke:var(--ink);stroke-width:1}
+.bubtxt{font-size:10px;font-weight:600;fill:var(--ink)}
+.flow{stroke:var(--accent);stroke-width:1.2}
+.flowhead{fill:var(--accent)}
+.dl{stroke:var(--accent);stroke-width:.8}
+.dim{font-size:10px;fill:var(--accent)}
+.lbl{font-size:10px;fill:var(--ink)}
+.lblacc{font-size:10px;font-weight:600;fill:var(--accent)}
+.big{font-size:15px;font-weight:600;fill:var(--muted);letter-spacing:.08em}
+.note{font-size:9.5px;fill:var(--muted)}
+.cap{fill:var(--muted)}
+svg .cap{font-size:10px;letter-spacing:.08em}
+.stone{fill:var(--stone)}
+.soil{fill:var(--soil)}
+.bar{fill:var(--bad)}
+.steel{fill:var(--steel);opacity:.85}
+.leg{fill:none;stroke:var(--steel);stroke-width:1.4}
+.brk{fill:none;stroke:var(--steel);stroke-width:1}
+.anchor{fill:var(--steel)}
+.nut{fill:var(--ink)}
+.hole{fill:var(--sheet);stroke:var(--muted);stroke-width:.8}
+.sleeve{fill:var(--muted)}
+.lead{stroke:var(--muted);stroke-width:.7}
+@media (max-width:600px){h1{font-size:1.9rem}.sheet{padding:18px 16px}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Lake Clifton Aerospace Engine Test Site · Morgan State University</div>
+  <h1>Static-Fire Test Pad: Current Design</h1>
+  <p class="lede">This is the design as it stands after the 29 Sep 2026 anchor decision (PWS-LC-FND-001 Rev. 0A). It combines the foundation package, the level-pad drainage revision and the Hilti HDA anchor change on one sheet. It is a working design for PE review. It is not sealed.</p>
+</header>
+
+<div class="strip">
+  <div><span class="k">Pad</span><span class="v">8 × 8 ft × 15 in</span><span class="s">level deck, 0.00 datum</span></div>
+  <div><span class="k">Concrete</span><span class="v">f′c 5,000 psi</span><span class="s">F2 exposure, 6 % air</span></div>
+  <div><span class="k">Rebar</span><span class="v">#5 @ 9 in EW</span><span class="s">top and bottom mats, Gr. 60</span></div>
+  <div><span class="k">Anchors</span><span class="v">16 × HDA-TR M12</span><span class="s">stainless, post-installed</span></div>
+  <div><span class="k">Governing check</span><span class="v">Overturning FS 3.52</span><span class="s">1.76 with DAF 2.0</span></div>
+  <div><span class="k">Drainage</span><span class="v">Slope → trench → tank</span><span class="s">buried tank below the trench</span></div>
+</div>
+
+<section class="sheet">
+  <div class="sheet-head"><h2>Plan</h2><span class="tag">Sheet 1 · to scale</span></div>
+  <div class="draw"><svg viewBox="0 0 660 660" role="img" aria-label="Plan view of the pad, apron and trench drain, drawn to scale"><rect x="118.0" y="70.0" width="345.6" height="345.6" class="conc" /><rect x="118.0" y="415.6" width="345.6" height="64.8" class="apron" /><line x1="154.0" y1="424.6" x2="154.0" y2="466.0" class="flow"/><path d="M151.0 466.0 L157.0 466.0 L154.0 474.3 Z" class="flowhead"/><line x1="204.4" y1="424.6" x2="204.4" y2="466.0" class="flow"/><path d="M201.4 466.0 L207.4 466.0 L204.4 474.3 Z" class="flowhead"/><line x1="254.8" y1="424.6" x2="254.8" y2="466.0" class="flow"/><path d="M251.8 466.0 L257.8 466.0 L254.8 474.3 Z" class="flowhead"/><line x1="305.2" y1="424.6" x2="305.2" y2="466.0" class="flow"/><path d="M302.2 466.0 L308.2 466.0 L305.2 474.3 Z" class="flowhead"/><line x1="355.6" y1="424.6" x2="355.6" y2="466.0" class="flow"/><path d="M352.6 466.0 L358.6 466.0 L355.6 474.3 Z" class="flowhead"/><line x1="406.0" y1="424.6" x2="406.0" y2="466.0" class="flow"/><path d="M403.0 466.0 L409.0 466.0 L406.0 474.3 Z" class="flowhead"/><line x1="456.4" y1="424.6" x2="456.4" y2="466.0" class="flow"/><path d="M453.4 466.0 L459.4 466.0 L456.4 474.3 Z" class="flowhead"/><rect x="107.2" y="480.4" width="367.2" height="48.3" class="conc2" /><rect x="107.2" y="494.8" width="367.2" height="19.5" class="grate" /><line x1="111.5" y1="496.2" x2="111.5" y2="512.8" class="slot"/><line x1="120.2" y1="496.2" x2="120.2" y2="512.8" class="slot"/><line x1="128.8" y1="496.2" x2="128.8" y2="512.8" class="slot"/><line x1="137.4" y1="496.2" x2="137.4" y2="512.8" class="slot"/><line x1="146.1" y1="496.2" x2="146.1" y2="512.8" class="slot"/><line x1="154.7" y1="496.2" x2="154.7" y2="512.8" class="slot"/><line x1="163.4" y1="496.2" x2="163.4" y2="512.8" class="slot"/><line x1="172.0" y1="496.2" x2="172.0" y2="512.8" class="slot"/><line x1="180.6" y1="496.2" x2="180.6" y2="512.8" class="slot"/><line x1="189.3" y1="496.2" x2="189.3" y2="512.8" class="slot"/><line x1="197.9" y1="496.2" x2="197.9" y2="512.8" class="slot"/><line x1="206.6" y1="496.2" x2="206.6" y2="512.8" class="slot"/><line x1="215.2" y1="496.2" x2="215.2" y2="512.8" class="slot"/><line x1="223.8" y1="496.2" x2="223.8" y2="512.8" class="slot"/><line x1="232.5" y1="496.2" x2="232.5" y2="512.8" class="slot"/><line x1="241.1" y1="496.2" x2="241.1" y2="512.8" class="slot"/><line x1="249.8" y1="496.2" x2="249.8" y2="512.8" class="slot"/><line x1="258.4" y1="496.2" x2="258.4" y2="512.8" class="slot"/><line x1="267.0" y1="496.2" x2="267.0" y2="512.8" class="slot"/><line x1="275.7" y1="496.2" x2="275.7" y2="512.8" class="slot"/><line x1="284.3" y1="496.2" x2="284.3" y2="512.8" class="slot"/><line x1="293.0" y1="496.2" x2="293.0" y2="512.8" class="slot"/><line x1="301.6" y1="496.2" x2="301.6" y2="512.8" class="slot"/><line x1="310.2" y1="496.2" x2="310.2" y2="512.8" class="slot"/><line x1="318.9" y1="496.2" x2="318.9" y2="512.8" class="slot"/><line x1="327.5" y1="496.2" x2="327.5" y2="512.8" class="slot"/><line x1="336.2" y1="496.2" x2="336.2" y2="512.8" class="slot"/><line x1="344.8" y1="496.2" x2="344.8" y2="512.8" class="slot"/><line x1="353.4" y1="496.2" x2="353.4" y2="512.8" class="slot"/><line x1="362.1" y1="496.2" x2="362.1" y2="512.8" class="slot"/><line x1="370.7" y1="496.2" x2="370.7" y2="512.8" class="slot"/><line x1="379.4" y1="496.2" x2="379.4" y2="512.8" class="slot"/><line x1="388.0" y1="496.2" x2="388.0" y2="512.8" class="slot"/><line x1="396.6" y1="496.2" x2="396.6" y2="512.8" class="slot"/><line x1="405.3" y1="496.2" x2="405.3" y2="512.8" class="slot"/><line x1="413.9" y1="496.2" x2="413.9" y2="512.8" class="slot"/><line x1="422.6" y1="496.2" x2="422.6" y2="512.8" class="slot"/><line x1="431.2" y1="496.2" x2="431.2" y2="512.8" class="slot"/><line x1="439.8" y1="496.2" x2="439.8" y2="512.8" class="slot"/><line x1="448.5" y1="496.2" x2="448.5" y2="512.8" class="slot"/><line x1="457.1" y1="496.2" x2="457.1" y2="512.8" class="slot"/><line x1="465.8" y1="496.2" x2="465.8" y2="512.8" class="slot"/><circle cx="456.4" cy="504.5" r="6" class="outlet"/><rect x="240.4" y="451.6" width="230.4" height="136.8" rx="68.4" class="tankplan"/><circle cx="298.0" cy="574.0" r="7" class="riser"/><text x="298.0" y="577.3" class="tiny" text-anchor="middle">R</text><circle cx="427.6" cy="574.0" r="3" class="riser"/><text x="481.6" y="541.6" class="lblbad">BURIED TANK below grade</text><text x="481.6" y="553.6" class="note">≈300 gal, double-wall</text><text x="481.6" y="565.6" class="note">outlet drops straight in</text><text x="481.6" y="577.6" class="note">R = pump-out riser · ○ = vent</text><rect x="118.0" y="70.0" width="345.6" height="14.4" class="curb"/><rect x="118.0" y="70.0" width="14.4" height="410.4" class="curb"/><rect x="449.2" y="70.0" width="14.4" height="410.4" class="curb"/><rect x="177.4" y="129.4" width="226.8" height="226.8" class="stand"/><line x1="177.4" y1="129.4" x2="404.2" y2="356.2" class="stand"/><line x1="404.2" y1="129.4" x2="177.4" y2="356.2" class="stand"/><rect x="159.4" y="111.4" width="36.0" height="36.0" class="plate"/><circle cx="170.2" cy="122.2" r="2.3" class="anc"/><circle cx="170.2" cy="136.6" r="2.3" class="anc"/><circle cx="184.6" cy="122.2" r="2.3" class="anc"/><circle cx="184.6" cy="136.6" r="2.3" class="anc"/><rect x="159.4" y="338.2" width="36.0" height="36.0" class="plate"/><circle cx="170.2" cy="349.0" r="2.3" class="anc"/><circle cx="170.2" cy="363.4" r="2.3" class="anc"/><circle cx="184.6" cy="349.0" r="2.3" class="anc"/><circle cx="184.6" cy="363.4" r="2.3" class="anc"/><rect x="386.2" y="111.4" width="36.0" height="36.0" class="plate"/><circle cx="397.0" cy="122.2" r="2.3" class="anc"/><circle cx="397.0" cy="136.6" r="2.3" class="anc"/><circle cx="411.4" cy="122.2" r="2.3" class="anc"/><circle cx="411.4" cy="136.6" r="2.3" class="anc"/><rect x="386.2" y="338.2" width="36.0" height="36.0" class="plate"/><circle cx="397.0" cy="349.0" r="2.3" class="anc"/><circle cx="397.0" cy="363.4" r="2.3" class="anc"/><circle cx="411.4" cy="349.0" r="2.3" class="anc"/><circle cx="411.4" cy="363.4" r="2.3" class="anc"/><circle cx="290.8" cy="242.8" r="9" class="axis"/><circle cx="290.8" cy="242.8" r="2.4" class="axisdot"/><text x="290.8" y="266.8" class="lbl" text-anchor="middle">thrust axis · 3,000 lbf up</text><text x="290.8" y="199.6" class="big" text-anchor="middle">LEVEL DECK  0.00</text><line x1="177.4" y1="41.2" x2="177.4" y2="556.0" class="cut"/><circle cx="177.4" cy="28.6" r="8" class="bubble"/><text x="177.4" y="32.2" class="bubtxt" text-anchor="middle">A</text><circle cx="177.4" cy="568.6" r="8" class="bubble"/><text x="177.4" y="572.2" class="bubtxt" text-anchor="middle">A</text><text x="290.8" y="23.2" class="cap" text-anchor="middle">FAR END · OPERATOR SIDE</text><text x="290.8" y="450.9" class="lblacc" text-anchor="middle">SLOPED APRON  ½ in/ft</text><text x="226.0" y="397.6" class="note">baseplate ~10×10 in (confirm) · 4 anchors on 4 in square</text><text x="469.0" y="79.4" class="note">3×4 in curb, top +3.00</text><line x1="118.0" y1="-9.2" x2="463.6" y2="-9.2" class="dl"/><line x1="118.0" y1="-14.2" x2="118.0" y2="-4.2" class="dl"/><line x1="463.6" y1="-14.2" x2="463.6" y2="-4.2" class="dl"/><text x="290.8" y="-13.2" class="dim" text-anchor="middle">8'-0" (96 in)</text><line x1="177.4" y1="100.6" x2="404.2" y2="100.6" class="dl"/><line x1="177.4" y1="97.6" x2="177.4" y2="103.6" class="dl"/><line x1="404.2" y1="97.6" x2="404.2" y2="103.6" class="dl"/><text x="290.8" y="96.6" class="dim" text-anchor="middle">63 in leg spacing</text><line x1="74.8" y1="70.0" x2="74.8" y2="415.6" class="dl"/><line x1="69.8" y1="70.0" x2="79.8" y2="70.0" class="dl"/><line x1="69.8" y1="415.6" x2="79.8" y2="415.6" class="dl"/><text x="69.8" y="246.3" class="dim" text-anchor="end">96</text><line x1="74.8" y1="415.6" x2="74.8" y2="480.4" class="dl"/><line x1="69.8" y1="415.6" x2="79.8" y2="415.6" class="dl"/><line x1="69.8" y1="480.4" x2="79.8" y2="480.4" class="dl"/><text x="69.8" y="451.5" class="dim" text-anchor="end">18</text><line x1="74.8" y1="480.4" x2="74.8" y2="528.7" class="dl"/><line x1="69.8" y1="480.4" x2="79.8" y2="480.4" class="dl"/><line x1="69.8" y1="528.7" x2="79.8" y2="528.7" class="dl"/><text x="69.8" y="508.1" class="dim" text-anchor="end">13⅜</text><line x1="31.6" y1="70.0" x2="31.6" y2="528.7" class="dl"/><line x1="26.6" y1="70.0" x2="36.6" y2="70.0" class="dl"/><line x1="26.6" y1="528.7" x2="36.6" y2="528.7" class="dl"/><text x="26.6" y="302.9" class="dim" text-anchor="end"></text><text x="25.6" y="299.3" class="dim" text-anchor="middle" transform="rotate(-90 25.6 299.3)">10'-7½" overall</text><line x1="118.0" y1="257.2" x2="177.4" y2="257.2" class="dl"/><line x1="118.0" y1="254.2" x2="118.0" y2="260.2" class="dl"/><line x1="177.4" y1="254.2" x2="177.4" y2="260.2" class="dl"/><text x="147.7" y="253.2" class="dim" text-anchor="middle">16½</text><text x="16" y="650" class="note">Scale 1 in = 3.6 px · dimensions in inches · anchors are Hilti HDA-TR M12</text></svg></div>
+  <p class="cap">Four legs sit on a 63 in square centred on the 96 in pad. Each baseplate takes four anchors on a 4 in square, so the nearest anchor is 14.5 in from the pad edge. The 18 in apron on the side away from the operators slopes ½ in per foot. Water and any spilled RP-1 run down it into the trench, and the trench outlet drops straight into a buried tank. The dashed outline shows the tank below grade. It sits under the apron and trench, not under the pad, so the pad still bears on solid ground.</p>
+</section>
+
+<section class="sheet">
+  <div class="sheet-head"><h2>Section A–A</h2><span class="tag">Sheet 2 · to scale · through legs at x = 16½ in</span></div>
+  <div class="draw"><svg viewBox="0 0 720 412" role="img" aria-label="Section A-A through the pad, apron and trench, drawn to scale"><rect x="62.2" y="148.5" width="512.6" height="23.4" class="stone"/><rect x="62.2" y="171.9" width="512.6" height="35.1" class="soil"/><polygon points="70.0,90.0 444.4,90.0 514.6,92.9 530.2,92.9 530.2,114.9 551.4,114.9 551.4,92.9 567.0,92.9 567.0,148.5 70.0,148.5" class="conc"/><rect x="70.0" y="78.3" width="15.6" height="11.7" class="curb"/><rect x="528.6" y="93.9" width="24.2" height="1.2" class="steel"/><rect x="532.9" y="114.9" width="15.6" height="92.1" class="pvc"/><rect x="467.8" y="195.3" width="179.4" height="171.6" class="pit"/><rect x="483.4" y="207.0" width="148.2" height="148.2" rx="74.1" class="tank"/><rect x="475.6" y="355.2" width="163.8" height="11.7" class="conc2"/><rect x="608.2" y="86.1" width="19.5" height="120.9" class="riserS"/><text x="557.5" y="273.3" class="lblbad" text-anchor="middle">BURIED TANK (beyond)</text><text x="557.5" y="286.9" class="note" text-anchor="middle">≈300 gal · Ø38 in</text><text x="467.8" y="357.1" class="note" text-anchor="end">hold-down slab (anti-flotation)</text><text x="635.5" y="78.3" class="note">pump-out riser</text><text x="448.3" y="230.4" class="note" text-anchor="end">clean backfill (sand / pea gravel)</text><text x="448.3" y="246.0" class="note" text-anchor="end">kept outside the pad footprint</text><line x1="655.0" y1="148.5" x2="655.0" y2="207.0" class="dl"/><line x1="652.0" y1="148.5" x2="658.0" y2="148.5" class="dl"/><line x1="652.0" y1="207.0" x2="658.0" y2="207.0" class="dl"/><text x="660.0" y="181.2" class="dim" text-anchor="start">15 clear</text><circle cx="87.5" cy="99.0" r="1.8" class="bar"/><circle cx="87.5" cy="135.6" r="1.8" class="bar"/><circle cx="122.7" cy="99.0" r="1.8" class="bar"/><circle cx="122.7" cy="135.6" r="1.8" class="bar"/><circle cx="157.8" cy="99.0" r="1.8" class="bar"/><circle cx="157.8" cy="135.6" r="1.8" class="bar"/><circle cx="192.8" cy="99.0" r="1.8" class="bar"/><circle cx="192.8" cy="135.6" r="1.8" class="bar"/><circle cx="227.9" cy="99.0" r="1.8" class="bar"/><circle cx="227.9" cy="135.6" r="1.8" class="bar"/><circle cx="263.0" cy="99.0" r="1.8" class="bar"/><circle cx="263.0" cy="135.6" r="1.8" class="bar"/><circle cx="298.1" cy="99.0" r="1.8" class="bar"/><circle cx="298.1" cy="135.6" r="1.8" class="bar"/><circle cx="333.2" cy="99.0" r="1.8" class="bar"/><circle cx="333.2" cy="135.6" r="1.8" class="bar"/><circle cx="368.3" cy="99.0" r="1.8" class="bar"/><circle cx="368.3" cy="135.6" r="1.8" class="bar"/><circle cx="403.4" cy="99.0" r="1.8" class="bar"/><circle cx="403.4" cy="135.6" r="1.8" class="bar"/><circle cx="438.6" cy="99.0" r="1.8" class="bar"/><circle cx="438.6" cy="135.6" r="1.8" class="bar"/><circle cx="473.6" cy="100.2" r="1.8" class="bar"/><circle cx="473.6" cy="135.6" r="1.8" class="bar"/><circle cx="508.8" cy="101.7" r="1.8" class="bar"/><circle cx="508.8" cy="135.6" r="1.8" class="bar"/><rect x="126.5" y="35.4" width="15.6" height="50.7" class="leg"/><path d="M122.7 38.5 l4 -5 l4 8 l4 -5 l4 6" class="brk"/><rect x="114.8" y="86.1" width="39.0" height="3.9" class="steel"/><rect x="125.0" y="82.6" width="3.2" height="26.6" class="anchor"/><path d="M125.0 107.9 L122.5 110.3 L130.6 110.3 L128.2 107.9 Z" class="anchor"/><rect x="123.0" y="82.6" width="7" height="3.5" class="nut"/><rect x="140.5" y="82.6" width="3.2" height="26.6" class="anchor"/><path d="M140.5 107.9 L138.1 110.3 L146.1 110.3 L143.7 107.9 Z" class="anchor"/><rect x="138.6" y="82.6" width="7" height="3.5" class="nut"/><rect x="372.2" y="35.4" width="15.6" height="50.7" class="leg"/><path d="M368.3 38.5 l4 -5 l4 8 l4 -5 l4 6" class="brk"/><rect x="360.6" y="86.1" width="39.0" height="3.9" class="steel"/><rect x="370.6" y="82.6" width="3.2" height="26.6" class="anchor"/><path d="M370.6 107.9 L368.2 110.3 L376.2 110.3 L373.9 107.9 Z" class="anchor"/><rect x="368.8" y="82.6" width="7" height="3.5" class="nut"/><rect x="386.2" y="82.6" width="3.2" height="26.6" class="anchor"/><path d="M386.2 107.9 L383.8 110.3 L391.8 110.3 L389.4 107.9 Z" class="anchor"/><rect x="384.3" y="82.6" width="7" height="3.5" class="nut"/><text x="284.5" y="118.9" class="lbl" text-anchor="middle">reinforced concrete · f′c 5,000 psi · #5 @ 9 in EW, top and bottom</text><text x="257.2" y="162.5" class="note" text-anchor="middle">4–6 in compacted crushed stone</text><text x="257.2" y="193.3" class="note" text-anchor="middle">engineered fill over prepared subgrade (per geotech)</text><text x="257.2" y="24.5" class="note" text-anchor="middle">stand leg (typ.) · baseplate bears directly on concrete</text><line x1="46.6" y1="90.0" x2="46.6" y2="148.5" class="dl"/><line x1="41.6" y1="90.0" x2="51.6" y2="90.0" class="dl"/><line x1="41.6" y1="148.5" x2="51.6" y2="148.5" class="dl"/><text x="41.6" y="122.8" class="dim" text-anchor="end">15</text><line x1="171.4" y1="90.0" x2="171.4" y2="109.2" class="dl"/><line x1="168.4" y1="90.0" x2="174.4" y2="90.0" class="dl"/><line x1="168.4" y1="109.2" x2="174.4" y2="109.2" class="dl"/><text x="176.4" y="103.1" class="dim" text-anchor="start">hef 4.92 (125 mm)</text><line x1="428.8" y1="90.0" x2="428.8" y2="97.8" class="dl"/><line x1="425.8" y1="90.0" x2="431.8" y2="90.0" class="dl"/><line x1="425.8" y1="97.8" x2="431.8" y2="97.8" class="dl"/><text x="423.8" y="97.4" class="dim" text-anchor="end">2 cover</text><line x1="428.8" y1="136.8" x2="428.8" y2="148.5" class="dl"/><line x1="425.8" y1="136.8" x2="431.8" y2="136.8" class="dl"/><line x1="425.8" y1="148.5" x2="431.8" y2="148.5" class="dl"/><text x="423.8" y="146.2" class="dim" text-anchor="end">3 cover</text><line x1="70.0" y1="386.4" x2="444.4" y2="386.4" class="dl"/><line x1="70.0" y1="381.4" x2="70.0" y2="391.4" class="dl"/><line x1="444.4" y1="381.4" x2="444.4" y2="391.4" class="dl"/><text x="257.2" y="397.4" class="dim" text-anchor="middle">96 · level</text><line x1="444.4" y1="386.4" x2="514.6" y2="386.4" class="dl"/><line x1="444.4" y1="381.4" x2="444.4" y2="391.4" class="dl"/><line x1="514.6" y1="381.4" x2="514.6" y2="391.4" class="dl"/><text x="479.5" y="397.4" class="dim" text-anchor="middle">18</text><line x1="514.6" y1="386.4" x2="567.0" y2="386.4" class="dl"/><line x1="514.6" y1="381.4" x2="514.6" y2="391.4" class="dl"/><line x1="567.0" y1="381.4" x2="567.0" y2="391.4" class="dl"/><text x="540.8" y="397.4" class="dim" text-anchor="middle">13⅜</text><text x="479.5" y="81.4" class="lblacc" text-anchor="middle">0.75 fall</text><text x="540.7" y="73.6" class="note" text-anchor="middle">grate −1.00</text><text x="77.8" y="72.8" class="note">curb +3.00</text></svg></div>
+  <p class="cap">The pad, apron and trench encasement are poured as one monolithic block on 4–6 in of compacted stone, with the excavation 21 in below the pad top. Both rebar mats carry into the apron. The baseplates bear directly on the concrete, with no grout and no leveling nuts. The anchors are drilled after the pour, through the plates. The trench outlet drops vertically into the buried tank. The tank sits in clean backfill on a hold-down slab, and its top is 15 in below the pad soffit.</p>
+</section>
+
+<div class="grid2">
+  <section class="sheet">
+    <div class="sheet-head"><h2>Anchor detail</h2><span class="tag">Sheet 3</span></div>
+    <div class="draw"><svg class="fit" viewBox="0 0 440 335" role="img" aria-label="Schematic of a Hilti HDA-TR M12 undercut anchor set through the baseplate"><rect x="28.0" y="95.0" width="204.0" height="214.2" class="conc"/><path d="M115.2 95.0 V249.7 L108.9 268.4 V276.9 H151.1 V268.4 L144.8 249.7 V95.0 Z" class="hole"/><rect x="41.6" y="61.0" width="176.8" height="34.0" class="steel"/><rect x="115.2" y="61.0" width="29.6" height="34.0" class="hole"/><path d="M116.4 64.4 V249.7 L109.6 268.4 H121.5 V64.4 Z" class="sleeve"/><path d="M143.6 64.4 V249.7 L150.4 268.4 H138.5 V64.4 Z" class="sleeve"/><rect x="122.0" y="16.8" width="16.0" height="238.0" class="anchor"/><path d="M122.0 254.8 L111.3 273.5 H148.7 L138.0 254.8 Z" class="anchor"/><rect x="104.5" y="56.9" width="51.0" height="4.1" class="nut"/><rect x="113.0" y="40.6" width="34.0" height="16.3" class="nut"/><line x1="75.6" y1="95.0" x2="75.6" y2="262.3" class="dl"/><line x1="71.6" y1="95.0" x2="79.6" y2="95.0" class="dl"/><line x1="71.6" y1="262.3" x2="79.6" y2="262.3" class="dl"/><text x="70.6" y="182.1" class="dim" text-anchor="end">hef 125 mm</text><line x1="115.2" y1="295.6" x2="144.8" y2="295.6" class="dl"/><line x1="115.2" y1="292.6" x2="115.2" y2="298.6" class="dl"/><line x1="144.8" y1="292.6" x2="144.8" y2="298.6" class="dl"/><text x="130.0" y="306.6" class="dim" text-anchor="middle">Ø22 mm hole</text><line x1="228.6" y1="61.0" x2="228.6" y2="95.0" class="dl"/><line x1="225.6" y1="61.0" x2="231.6" y2="61.0" class="dl"/><line x1="225.6" y1="95.0" x2="231.6" y2="95.0" class="dl"/><text x="233.6" y="81.5" class="dim" text-anchor="start">plate 15–30 mm</text><line x1="153.8" y1="21.9" x2="242.2" y2="21.9" class="lead"/><text x="245.6" y="25.4" class="note">nut + washer · 80 N·m max</text><line x1="153.8" y1="149.4" x2="242.2" y2="149.4" class="lead"/><text x="245.6" y="152.9" class="note">HDA-R stainless sleeve</text><line x1="153.8" y1="197.0" x2="242.2" y2="197.0" class="lead"/><text x="245.6" y="200.5" class="note">M12 cone bolt</text><line x1="153.8" y1="266.7" x2="242.2" y2="266.7" class="lead"/><text x="245.6" y="270.2" class="note">undercut (form-fit)</text><text x="16" y="320" class="note">Schematic · set per ESR-1546 and Hilti instructions</text></svg></div>
+  </section>
+  <section class="sheet">
+    <div class="sheet-head"><h2>Anchor schedule</h2><span class="tag">Rev. 0A</span></div>
+    <div class="tbl"><table>
+      <tr><th>Item</th><th>Value</th></tr>
+      <tr><td>Product</td><td class="m">Hilti HDA-TR M12x125/30</td></tr>
+      <tr><td>Material</td><td>Stainless (HDA-R). Carbon steel is limited to dry interior use (ESR-1546 §5.14).</td></tr>
+      <tr><td>Count</td><td class="m">16 (4 per leg)</td></tr>
+      <tr><td>Effective embedment</td><td class="m">125 mm (4.92 in)</td></tr>
+      <tr><td>s<sub>min</sub> = c<sub>min</sub></td><td class="m">90 mm (3½ in)</td></tr>
+      <tr><td>Edge distance</td><td class="m">14.5 in</td></tr>
+      <tr><td>Baseplate holes</td><td class="m">22–23 mm. Enlarge the existing ≈0.70 in holes.</td></tr>
+      <tr><td>Plate thickness</td><td class="m">15–30 mm (/30)</td></tr>
+      <tr><td>Drill bit</td><td class="m">TE-C/TE-Y-HDA-B 22x155</td></tr>
+      <tr><td>Setting tool</td><td class="m">HDA-ST M12</td></tr>
+      <tr><td>Torque</td><td class="m">80 N·m (59 ft-lb) max</td></tr>
+      <tr><td>Inspection</td><td>Periodic special inspection (§4.4)</td></tr>
+    </table></div>
+  </section>
+</div>
+
+<div class="grid2">
+  <section class="sheet">
+    <div class="sheet-head"><h2>Design basis</h2><span class="tag">Loads</span></div>
+    <div class="tbl"><table>
+      <tr><th>Item</th><th>Value</th></tr>
+      <tr><td>Engine thrust</td><td class="m">3,000 lbf upward</td></tr>
+      <tr><td>Load cases</td><td class="m">90° vertical · 7.5° off-axis</td></tr>
+      <tr><td>Stand + rocket</td><td class="m">1,500 + 330 = 1,830 lb</td></tr>
+      <tr><td>Pad self-weight</td><td class="m">≈ 12,000 lb</td></tr>
+      <tr><td>Stand height</td><td class="m">19.3 ft</td></tr>
+      <tr><td>Tension per anchor</td><td class="m">N<sub>ua</sub> = 430 lb</td></tr>
+      <tr><td>Bearing (service)</td><td class="m">216 psf</td></tr>
+      <tr><td>Code</td><td class="m">ACI 318-19 Ch. 17 · ASCE 7</td></tr>
+    </table></div>
+  </section>
+  <section class="sheet">
+    <div class="sheet-head"><h2>Concrete and drainage</h2><span class="tag">Spec</span></div>
+    <div class="tbl"><table>
+      <tr><th>Item</th><th>Value</th></tr>
+      <tr><td>Mix</td><td class="m">5,000 psi · w/cm ≤ 0.45 · ¾ in agg.</td></tr>
+      <tr><td>Exposure</td><td class="m">F2 · 6.0 ± 1.5 % air</td></tr>
+      <tr><td>Cover</td><td class="m">2 in top · 3 in bottom</td></tr>
+      <tr><td>Pad finish</td><td class="m">steel trowel, flat to F<sub>F</sub> 35</td></tr>
+      <tr><td>Apron</td><td class="m">18 in · ½ in/ft · 0.75 in fall</td></tr>
+      <tr><td>Trench</td><td class="m">5.43 × 5.39 in clear, steel grate</td></tr>
+      <tr><td>Outlet</td><td class="m">4 in vertical drop into tank</td></tr>
+      <tr><td>Tank</td><td class="m">≈300 gal, double-wall, buried</td></tr>
+      <tr><td>Tank top</td><td class="m">−30 in (below pad excavation)</td></tr>
+      <tr><td>Access</td><td class="m">pump-out riser + vent to grade</td></tr>
+      <tr><td>Curb</td><td class="m">3 × 4 in, top +3.00</td></tr>
+      <tr><td>Concrete to order</td><td class="m">≈ 4.25 yd³</td></tr>
+    </table></div>
+  </section>
+</div>
+
+<section class="sheet">
+  <div class="sheet-head"><h2>Check results</h2><span class="tag">Rev. 0A · capacity vs demand</span></div>
+  <div class="tbl"><table>
+    <tr><th>Check</th><th>Capacity / result</th><th>Ratio or FS</th><th></th></tr>
+    <tr><td>Anchor steel, tension</td><td class="m">φN<sub>sa</sub> 11,397 lb</td><td class="m">3.8 %</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>Concrete breakout, tension (group)</td><td class="m">φN<sub>cbg</sub> 19,442 lb</td><td class="m">8.8 %, governs tension</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>Anchor steel, shear</td><td class="m">φV<sub>sa</sub> 5,845 lb</td><td class="m">0.7 %</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>Breakout / pryout, shear</td><td class="m">17,010 / 41,874 lb</td><td class="m">0.9 % / 0.4 %</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>Tension–shear interaction</td><td class="m">—</td><td class="m">0.098</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>Overturning</td><td class="m">FS 3.52 (governs)</td><td class="m">1.76 with DAF 2.0</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>Sliding / uplift</td><td class="m">FS 11.1 / 4.6</td><td class="m">deflector-sliding bound FS 1.63</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>Pad flexure / one-way shear / cracking</td><td class="m">0.9 % / 3.0 % / 0.6 %</td><td class="m">φV<sub>c</sub> 8,014 lb</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>Anchors with DAF 2.0</td><td class="m">—</td><td class="m">17.7 %</td><td><span class="pill ok">Pass</span></td></tr>
+    <tr><td>Wind on the 19.3 ft stand (ASCE 7-22)</td><td class="m">not yet run</td><td class="m">—</td><td><span class="pill warn">Open</span></td></tr>
+  </table></div>
+</section>
+
+<section class="sheet">
+  <div class="sheet-head"><h2>How the design got here</h2><span class="tag">Superseded decisions</span></div>
+  <div class="tbl"><table>
+    <tr><th>Element</th><th>Earlier</th><th>Now</th></tr>
+    <tr><td>Anchors</td><td>Hilti HDI-TZ ¾ in drop-ins, then ⅝ in cast-in F1554 Gr. 55 at 10 in (Jul 2026)</td><td>HDA-TR M12 undercut, post-installed, h<sub>ef</sub> 125 mm (29 Sep)</td></tr>
+    <tr><td>Baseplate seating</td><td>Leveling nuts on 1.00 in non-shrink grout</td><td>Plate bears directly on concrete</td></tr>
+    <tr><td>Deck</td><td>Whole pad sloped 3/16 in/ft, which tilted the stand 0.9°</td><td>Level deck plus an 18 in sloped apron (Rev. 2 drainage)</td></tr>
+    <tr><td>Containment</td><td>4 in PVC run at 2 % to a 55 gal drum beside the pad</td><td>Buried tank directly under the trench</td></tr>
+    <tr><td>Top cover</td><td>3 in</td><td>2 in (F2 exposure). Detail the top mat clear of the anchor holes.</td></tr>
+  </table></div>
+  <div class="note-box">The drainage sheet (Aug) still shows grout and 14 in cast-in bolts. Those were superseded by Rev. 0A. Its apron and trench layout still apply. The drum has been replaced by the buried tank. The same sheet calls for an 8'-6" trench on an 8'-0" pad, so the trench overhangs each side by 3 in. Confirm that detail with the PE.</div>
+</section>
+
+<section class="sheet">
+  <div class="sheet-head"><h2>Open before it can be sealed</h2><span class="tag">Rev. 0A §13</span></div>
+  <ol class="items">
+    <li>Baseplate thickness and hole size for HDA-TR (holes must be enlarged to 22–23 mm).</li>
+    <li>ASCE 7-22 wind at rest, plus an operational wind limit.</li>
+    <li>Geotech: allowable bearing, subgrade preparation over the Lake Clifton fill, and μ = 0.40.</li>
+    <li>Baseplate bending, welds and prying, now that the plate bears directly on concrete.</li>
+    <li>The fabrication drawing still shows a 6 in pad. Change it to 15 in.</li>
+    <li>Flame deflector geometry and anchorage. Keep the trench at least 6 ft from the deflector exit, since the polymer channel is rated to 180 °F.</li>
+    <li>Engineer-of-record acceptance of HDA under fatigue and shock, which ESR-1546 §5.10 does not cover.</li>
+    <li>F2 mix design submittal.</li>
+    <li>PE seal, with GPR or cover-meter scan before drilling.</li>
+    <li>Tank size. 300 gal is a placeholder. It needs to cover the RP-1 inventory + 10 % and a storm event.</li>
+    <li>Tank buoyancy. An empty buried tank on the Lake Clifton fill can float in high groundwater, so it needs a hold-down slab or deadmen sized by the PE.</li>
+    <li>Tank type and leak detection. Use a double-wall tank listed for flammable liquids (steel UL 58/1746 or fiberglass UL 1316), with interstitial monitoring, bonding and grounding.</li>
+    <li>Permitting. A buried tank that collects hydrocarbons may be regulated as an underground storage tank. Confirm with Morgan State EHS and MDE before buying it.</li>
+  </ol>
+  <div class="note-box bad">This is a working design for review and pricing. A licensed PE has to review and stamp it under PWS-LC-FND-001, with special inspection during construction, before any test firing.</div>
+</section>
+
+<footer>Compiled from the Aero project: Foundation &amp; Anchor Design Package (Jul 2026), Pad Drainage Rev. 2 (Aug 2026) and PWS-LC-FND-001 Rev. 0A technical review (29 Sep 2026). Rev. 0A corrected PWS: <a href="https://docs.google.com/document/d/1npjtJAghsAiRUiuCKKGR-SEHRx7p40GB6Ka7CSMIOzU/edit">Google Doc</a>.</footer>
+</div>
+
+</body></html>
