@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>fs-CARS &amp; ACCD Proposal Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&display=swap">
+<style>
+  :root{color-scheme:light dark}
+  body{margin:0;background:#2a2f36;font-family:'IBM Plex Sans',Arial,sans-serif}
+  .archive-head{max-width:1200px;margin:0 auto;padding:20px 16px 4px;color:#e5ecf2}
+  .archive-head h1{font-size:20px;margin:0 0 4px}
+  .archive-head p{font-size:13px;margin:0;color:#aab4bf}
+  .deck{padding:16px}
+  .slide-box{width:100%;max-width:1200px;margin:0 auto 22px;overflow:hidden;border-radius:8px;box-shadow:0 2px 14px rgba(0,0,0,.4);background:#000}
+  .slide-inner{transform-origin:top left}
+  .slide-inner > section{position:relative;width:1920px;height:1080px;box-sizing:border-box;overflow:hidden}
+  /* custom elements used by some slides degrade to empty inline boxes */
+  x-icon,x-shape,x-connector,x-embed{display:inline-block}
+  img{display:block}
+</style>
+</head>
+<body>
+<div class="archive-head"><h1>fs-CARS &amp; ACCD Proposal Status</h1><p>Archived slide deck — 8 slides. Rendered at 16:9; some decorative icons may not appear.</p></div>
+<div class="deck">
+<div class="slide-box"><div class="slide-inner">
+<section id="cover" data-transition="fade" style="background:#13233F; color:#F6F4EE; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px; display:flex; flex-direction:column; justify-content:space-between">
+  <div style="position:absolute; left:0; top:0; width:24px; height:1080px; background:#E8792B"></div>
+  <div style="display:flex; flex-direction:column; gap:28px">
+    <p style="font-size:28px; color:#F0A262; letter-spacing:3px; text-transform:uppercase; font-weight:600">Proposal status · 24 September 2026</p>
+    <h1 style="font-family:'Source Serif 4', Georgia, serif; font-size:104px; font-weight:600; line-height:1.05; color:#F6F4EE; width:1500px">fs-CARS Lab &amp; ACCD Burner Proposals</h1>
+    <p style="font-size:36px; color:#C9D2E0; line-height:1.4; width:1300px">Vendor quotes, funding pipeline, test-stand foundation and the LOX quick-disconnect</p>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:32px; font-weight:600; color:#F6F4EE">Mazen Badr</p>
+    <p style="font-size:26px; color:#C9D2E0">Dr. Oluwatobi Busari's lab · Morgan State University</p>
+  </div>
+  <aside>Eight slides: fs-CARS quotes, what is still open, blue-laser offers, the ACCD burner budget, the funding pipeline, the Lake Clifton foundation, and the LOX quick-disconnect.</aside>
+</section>
+</div></div>
+<div class="slide-box"><div class="slide-inner">
+<section id="cars-quotes" data-transition="fade" style="background:#F6F4EE; color:#13233F; font-family:'IBM Plex Sans', Arial, sans-serif; padding:96px 112px 150px; display:flex; flex-direction:column; gap:32px">
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:24px; color:#B4501A; letter-spacing:2px; text-transform:uppercase; font-weight:600">fs-CARS laser lab · quotes received</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:600; line-height:1.1; color:#13233F">Three priced quotes total $53,418</h2>
+  </div>
+  <table style="font-size:24px; color:#2A3547; width:1696px">
+    <tr style="background:#13233F">
+      <th style="width:16%; color:#F6F4EE">Vendor</th>
+      <th style="width:34%; color:#F6F4EE">Item</th>
+      <th style="width:14%; color:#F6F4EE">Quote</th>
+      <th style="width:13%; color:#F6F4EE; text-align:right">Price</th>
+      <th style="width:23%; color:#F6F4EE">Notes</th>
+    </tr>
+    <tr style="background:#FBFAF6">
+      <td>Mesa Photonics</td>
+      <td>FROGscan FS-2TiS pulse analyzer, cameras, crystal tilt</td>
+      <td>#1130</td>
+      <td style="text-align:right">$29,945</td>
+      <td>Valid ~Dec 29 · 10 wk ARO</td>
+    </tr>
+    <tr style="background:#F1EEE6">
+      <td>Zaber</td>
+      <td>2 × X-LDA150A motorized delay stages</td>
+      <td>SO72574</td>
+      <td style="text-align:right">$16,778</td>
+      <td>Alt. SO72577: $6,274 · valid ~Nov 30</td>
+    </tr>
+    <tr style="background:#FBFAF6">
+      <td>Gentec-EO</td>
+      <td>Energy + power meters, attenuator, Ethernet link</td>
+      <td>68515-1</td>
+      <td style="text-align:right">$6,695</td>
+      <td>Alt. -2 adds QE12LP: $8,108 · valid Dec 31</td>
+    </tr>
+    <tr style="background:#F1EEE6">
+      <td>Parr Instrument</td>
+      <td>1-gal 316 SS vessel, 4 × 1 in sapphire windows, heaters</td>
+      <td>E-mail, Sep 4</td>
+      <td style="text-align:right">$34–38K</td>
+      <td>+ stand $3.2K or $13.7K · formal quote offered</td>
+    </tr>
+    <tr style="background:#FBFAF6">
+      <td>Berkeley Nucleonics</td>
+      <td>Model 577 8-channel delay generator</td>
+      <td>Q-33996</td>
+      <td style="text-align:right">In PDF</td>
+      <td>Standard 577-8C config · Sep 3</td>
+    </tr>
+    <tr style="background:#F1EEE6">
+      <td>Crystran</td>
+      <td>Sapphire windows, 50 mm (4 + 2 spares)</td>
+      <td>APR44137</td>
+      <td style="text-align:right">In PDF</td>
+      <td>Received Sep 15 · 90-day validity</td>
+    </tr>
+  </table>
+  <div style="position:absolute; left:112px; right:112px; bottom:56px; display:flex; justify-content:space-between; gap:32px">
+    <p style="font-size:24px; color:#5B6575">$53,418 = Mesa + Zaber + Gentec. Whole-lab budgetary plan (Aug 26): $1,134,000</p>
+    <p style="font-size:24px; color:#5B6575">2</p>
+  </div>
+  <aside>Priced and in hand: Mesa Photonics FROGscan $29,945, Zaber delay stages $16,778, Gentec-EO meters $6,695 — $53,418 together. Parr gave budgetary e-mail numbers: vessel $16–20K, four integral windows +$12K, cartridge heaters +$3.5K, controller $2.7K, stand $3.2K (cart) or $13.7K (pneumatic lift), ASME cert with plugs $880. Berkeley Nucleonics and Crystran sent formal quotes as attachments; the dollar figures are in those PDFs.</aside>
+</section>
+</div></div>
+<div class="slide-box"><div class="slide-inner">
+<section id="cars-open" data-transition="fade" style="background:#F6F4EE; color:#13233F; font-family:'IBM Plex Sans', Arial, sans-serif; padding:96px 112px 150px; display:flex; flex-direction:column; gap:32px">
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:24px; color:#B4501A; letter-spacing:2px; text-transform:uppercase; font-weight:600">fs-CARS laser lab · still open</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:600; line-height:1.1; color:#13233F">Open requests before the budget is final</h2>
+  </div>
+  <div style="display:flex; gap:24px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FDFCF9; padding:32px; border:1px solid #DDD8CC; border-radius:12px">
+      <h3 style="font-size:32px; font-weight:600; color:#13233F">Needs our reply</h3>
+      <ul style="font-size:24px; line-height:1.4; color:#2A3547">
+        <li>EKSMA: BBO and mirror specs</li>
+        <li>Light Conversion: TOPAS only via the SP or Coherent pump</li>
+        <li>Layertec: mirror angle and polarization</li>
+        <li>Thorlabs: optics quantities</li>
+        <li>APE: pulseCheck call (quote ready)</li>
+        <li>SRS DG645: web-form request</li>
+      </ul>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FDFCF9; padding:32px; border:1px solid #DDD8CC; border-radius:12px">
+      <h3 style="font-size:32px; font-weight:600; color:#13233F">Waiting on vendor</h3>
+      <ul style="font-size:24px; line-height:1.4; color:#2A3547">
+        <li>Parr: formal vessel quote</li>
+        <li>Edmund Optics: no reply</li>
+        <li>Alicat (flow controllers): no reply</li>
+        <li>PCB Piezotronics: no reply</li>
+        <li>LightMachinery: no reply</li>
+      </ul>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FDFCF9; padding:32px; border:1px solid #DDD8CC; border-radius:12px">
+      <h3 style="font-size:32px; font-weight:600; color:#13233F">Not yet requested</h3>
+      <ul style="font-size:24px; line-height:1.4; color:#2A3547">
+        <li>Ti:Sapphire amplifier (~$500K)</li>
+        <li>Spectrograph + EMCCD (Andor / Teledyne PI)</li>
+        <li>Optical table (Newport / TMC)</li>
+        <li>McKenna burner (Holthuis)</li>
+        <li>Swagelok gas handling, NI DAQ</li>
+      </ul>
+    </div>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:8px; background:#13233F; padding:28px 36px; border-radius:12px">
+    <p style="font-size:24px; color:#F0A262; font-weight:600; letter-spacing:2px; text-transform:uppercase">Decision needed</p>
+    <p style="font-size:28px; color:#F6F4EE; line-height:1.35">Amplifier vendor: Coherent Astrella or Spectra-Physics Solstice Ace. It fixes the OPA route, and the laser system is $730K of the $1.134M plan.</p>
+  </div>
+  <div style="position:absolute; left:112px; right:112px; bottom:56px; display:flex; justify-content:space-between; gap:32px">
+    <p style="font-size:24px; color:#5B6575">16 budgetary requests sent Aug 30 on Dr. Busari's behalf</p>
+    <p style="font-size:24px; color:#5B6575">3</p>
+  </div>
+  <aside>Light Conversion cannot quote a TOPAS for a Spectra-Physics or Coherent pump for contractual reasons, so the OPA comes through whichever amplifier vendor we pick; they offered a Yb route (Pharos + Orpheus) as the alternative. Layertec asked on Sep 8 for angle of incidence and polarization; Thorlabs asked on Sep 4 for quantities; APE has the pulseCheck quote nearly ready but wants a call first.</aside>
+</section>
+</div></div>
+<div class="slide-box"><div class="slide-inner">
+<section id="blue-laser" data-transition="fade" style="background:#F6F4EE; color:#13233F; font-family:'IBM Plex Sans', Arial, sans-serif; padding:96px 112px 150px; display:flex; flex-direction:column; gap:32px">
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:24px; color:#B4501A; letter-spacing:2px; text-transform:uppercase; font-weight:600">Tunable blue laser · 350–450 nm</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:600; line-height:1.1; color:#13233F">Complete systems run from $84K to ~$500K</h2>
+  </div>
+  <table style="font-size:24px; color:#2A3547; width:1696px">
+    <tr style="background:#13233F">
+      <th style="width:17%; color:#F6F4EE">Vendor</th>
+      <th style="width:31%; color:#F6F4EE">System</th>
+      <th style="width:15%; color:#F6F4EE">Quote</th>
+      <th style="width:15%; color:#F6F4EE; text-align:right">Price</th>
+      <th style="width:22%; color:#F6F4EE">Notes</th>
+    </tr>
+    <tr style="background:#FBFAF6">
+      <td>OPOTEK</td>
+      <td>Opolucis AIR 1030U OPO, fast tuning</td>
+      <td>Q20265740</td>
+      <td style="text-align:right">$84,450</td>
+      <td>Valid to Dec 11 · install not incl.</td>
+    </tr>
+    <tr style="background:#F1EEE6">
+      <td>EKSPLA</td>
+      <td>NT230 / NT240 / NT260, 300–2600 nm</td>
+      <td>26VM205</td>
+      <td style="text-align:right">$145–249K</td>
+      <td>Budgetary · answers pending</td>
+    </tr>
+    <tr style="background:#FBFAF6">
+      <td>Spectra-Physics</td>
+      <td>Mai Tai HP + GWU-UHG-2/A (femtosecond)</td>
+      <td>Q-285893</td>
+      <td style="text-align:right">~$165K</td>
+      <td>+$46K pulse selector · expires Oct 11</td>
+    </tr>
+    <tr style="background:#F1EEE6">
+      <td>Clark-MXR</td>
+      <td>Impulse + iNOPA + SHG (femtosecond)</td>
+      <td>Budget</td>
+      <td style="text-align:right">$275,000</td>
+      <td>Vendor: iNOPA too broad (~20 nm)</td>
+    </tr>
+    <tr style="background:#FBFAF6">
+      <td>Photonics Industries</td>
+      <td>TU Series + SHG (nanosecond)</td>
+      <td>Verbal</td>
+      <td style="text-align:right">~$500K</td>
+      <td>FS Series option not priced</td>
+    </tr>
+    <tr style="background:#F1EEE6">
+      <td>APE America</td>
+      <td>HarmoniXX harmonic generator (add-on)</td>
+      <td>APE260-0129A/B</td>
+      <td style="text-align:right">$43.3K / $61.4K</td>
+      <td>Needs a tunable source · shipping extra</td>
+    </tr>
+  </table>
+  <div style="position:absolute; left:112px; right:112px; bottom:56px; display:flex; justify-content:space-between; gap:32px">
+    <p style="font-size:24px; color:#5B6575">Dropped: Thorlabs (discontinued), TOPTICA (no full range). No price yet: Lumibird, Light Conversion</p>
+    <p style="font-size:24px; color:#5B6575">4</p>
+  </div>
+  <aside>OPOTEK Q20265740: $82,400 base + $7,700 OPO fast tuning + $7,700 UV fast tuning, minus a 14% academic discount ($13,700), plus $350 shipping = $84,450; 120 days ARO. Spectra-Physics said on Sep 16 the SHG bandwidth is about 8 nm and it may not suit fast narrow-line switching. EKSPLA: NT230 ~$145K, NT240 ~$151K, NT260 ~$249K (narrower linewidth). Photonics Industries gave ~$500K verbally for the ns option. APE HarmoniXX is an add-on, not a complete source.</aside>
+</section>
+</div></div>
+<div class="slide-box"><div class="slide-inner">
+<section id="accd" data-transition="fade" style="background:#F6F4EE; color:#13233F; font-family:'IBM Plex Sans', Arial, sans-serif; padding:96px 112px 150px; display:flex; flex-direction:column; gap:32px">
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:24px; color:#B4501A; letter-spacing:2px; text-transform:uppercase; font-weight:600">ACCD burner proposal · hardware budget</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:600; line-height:1.1; color:#13233F">Burner hardware is $114,090; the research ask is $658,586</h2>
+  </div>
+  <div style="display:grid; grid-template-columns:1060px 1fr; gap:40px; align-items:start">
+    <table style="font-size:24px; color:#2A3547">
+      <tr style="background:#13233F">
+        <th style="width:24%; color:#F6F4EE">Item</th>
+        <th style="width:56%; color:#F6F4EE">What it is</th>
+        <th style="width:20%; color:#F6F4EE; text-align:right">Budget</th>
+      </tr>
+      <tr style="background:#FBFAF6">
+        <td>TA-1 Hencken</td>
+        <td>50 mm atmospheric burner + gas panel</td>
+        <td style="text-align:right">$4,690</td>
+      </tr>
+      <tr style="background:#F1EEE6">
+        <td>TA-2 Vessel</td>
+        <td>300 × 600 mm vessel, windows, dry pump, pressure control, interlocks</td>
+        <td style="text-align:right">$61,300</td>
+      </tr>
+      <tr style="background:#FBFAF6">
+        <td>TA-3 Hydrogen</td>
+        <td>H2 flow control, leak detection, cabinet, purge</td>
+        <td style="text-align:right">$11,500</td>
+      </tr>
+      <tr style="background:#F1EEE6">
+        <td>TA-4 RDC injector</td>
+        <td>Single-element injector head, transducers, sapphire window</td>
+        <td style="text-align:right">$13,600</td>
+      </tr>
+      <tr style="background:#FBFAF6">
+        <td>Wavemeter</td>
+        <td>Wavelength reference</td>
+        <td style="text-align:right">$14,000</td>
+      </tr>
+      <tr style="background:#F1EEE6">
+        <td>VBG/HOE optics</td>
+        <td>Co-PI collection optics</td>
+        <td style="text-align:right">$9,000</td>
+      </tr>
+      <tr style="background:#E6DFD0">
+        <td><b>Total</b></td>
+        <td><b>One fabricated system, 20–760 Torr</b></td>
+        <td style="text-align:right"><b>$114,090</b></td>
+      </tr>
+    </table>
+    <div style="display:flex; flex-direction:column; gap:16px; background:#FDFCF9; padding:32px; border:1px solid #DDD8CC; border-radius:12px">
+      <h3 style="font-size:32px; font-weight:600; color:#13233F">How the ask is split</h3>
+      <p style="font-size:56px; font-weight:600; line-height:1.1; color:#13233F">$658,586</p>
+      <p style="font-size:24px; color:#2A3547; line-height:1.35">Research, 36 months · <span style="color:#B4501A">ONR Long Range BAA, due Sep 30</span></p>
+      <hr style="border-top:1px solid #DDD8CC">
+      <p style="font-size:56px; font-weight:600; line-height:1.1; color:#13233F">$114,090</p>
+      <p style="font-size:24px; color:#2A3547; line-height:1.35">Hardware · <span style="color:#B4501A">FY27 DURIP, due Nov 6</span></p>
+      <hr style="border-top:1px solid #DDD8CC">
+      <p style="font-size:24px; color:#5B6575; line-height:1.35">Figures are budgetary. DURIP needs recent vendor quotes by Nov 4.</p>
+    </div>
+  </div>
+  <div style="position:absolute; left:112px; right:112px; bottom:56px; display:flex; justify-content:space-between; gap:32px">
+    <p style="font-size:24px; color:#5B6575">Source: ACCD Technical Volume v2, Section 11</p>
+    <p style="font-size:24px; color:#5B6575">5</p>
+  </div>
+  <aside>ACCD = Altitude Compensated Combustion Diagnostics Laboratory: a revised Hencken burner in a 300 mm vacuum vessel held from 760 down to 20 Torr, so a bench flame sits in the chemical and radiative regime of a 10–25 km plume. PI Dr. Busari, Co-PI Dr. Okorogu. If DURIP is not awarded, the $114,090 is requested from ONR by award modification (revised total $772,676). Burner pricing on file: McKenna SSwCT from Holthuis, $6,700 list (Dec 2023 sheet, expect ~10% higher); Hencken ~$15–25K custom (Spectral Energies, budgetary).</aside>
+</section>
+</div></div>
+<div class="slide-box"><div class="slide-inner">
+<section id="funding" data-transition="fade" style="background:#F6F4EE; color:#13233F; font-family:'IBM Plex Sans', Arial, sans-serif; padding:96px 112px 150px; display:flex; flex-direction:column; gap:32px">
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:24px; color:#B4501A; letter-spacing:2px; text-transform:uppercase; font-weight:600">Funding · applied and in preparation</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:600; line-height:1.1; color:#13233F">Next deadline: ONR Long Range BAA, Sep 30</h2>
+  </div>
+  <table style="font-size:24px; color:#2A3547; width:1696px">
+    <tr style="background:#13233F">
+      <th style="width:26%; color:#F6F4EE">Program</th>
+      <th style="width:30%; color:#F6F4EE">What it funds</th>
+      <th style="width:14%; color:#F6F4EE; text-align:right">Ask</th>
+      <th style="width:13%; color:#F6F4EE">Deadline</th>
+      <th style="width:17%; color:#F6F4EE">Status</th>
+    </tr>
+    <tr style="background:#FBFAF6">
+      <td>ONR Long Range BAA (N0001425SB001)</td>
+      <td>ACCD research: salaries, 2 GRAs, tuition</td>
+      <td style="text-align:right">$658,586</td>
+      <td>Sep 30, 2 PM</td>
+      <td>Ready; Dr. Busari submits</td>
+    </tr>
+    <tr style="background:#F1EEE6">
+      <td>FY27 DoW DURIP (N0001426SF003)</td>
+      <td>ACCD hardware; fs-CARS core possible</td>
+      <td style="text-align:right">$114,090+</td>
+      <td>Nov 6</td>
+      <td>Drafting; needs PO support</td>
+    </tr>
+    <tr style="background:#FBFAF6">
+      <td>Army HBCU/TCU Equipment (W911NF26S0105)</td>
+      <td>fs-CARS laser system (cap $1.5M)</td>
+      <td style="text-align:right">~$1.0–1.13M</td>
+      <td>Oct 9</td>
+      <td>Needs 1 of 3 MSU slots</td>
+    </tr>
+    <tr style="background:#F1EEE6">
+      <td>NSF MRI Track 1</td>
+      <td>fs-CARS instrument; cost share waived for MSIs</td>
+      <td style="text-align:right">~$1M</td>
+      <td>Oct 15–Nov 16</td>
+      <td>Preparing</td>
+    </tr>
+    <tr style="background:#FBFAF6">
+      <td>NASA M-STAR</td>
+      <td>MoLML concept; Morgan as Co-I (≤40% subaward)</td>
+      <td style="text-align:right">—</td>
+      <td>TBD</td>
+      <td>Needs a lead MSI</td>
+    </tr>
+    <tr style="background:#F1EEE6">
+      <td>Keck Foundation / DOE BES FY27</td>
+      <td>Laser lab; DOE needs spectroscopy framing</td>
+      <td style="text-align:right">—</td>
+      <td>~Dec / ~Oct</td>
+      <td>Watching</td>
+    </tr>
+  </table>
+  <div style="position:absolute; left:112px; right:112px; bottom:56px; display:flex; justify-content:space-between; gap:32px">
+    <p style="font-size:24px; color:#5B6575">Closed: ONR HBCU/MI NOFO (retired Sep 16) · NSF HBCU-EiR (late LOI declined Sep 15)</p>
+    <p style="font-size:24px; color:#5B6575">6</p>
+  </div>
+  <aside>Strategy is split the ask: research money (people) through the ONR Long Range BAA, instruments through DURIP, the Army equipment NOFO and NSF MRI. The same hardware can be requested from Army, DURIP and MRI at once if disclosed in Current and Pending, and rescoped if more than one funds. DURIP is only competitive with a program officer behind it, which is why the BAA white paper to Code 352 (Dr. Marineau) matters. The Army NOFO allows only three applications per institution, so the slot has to come from ORA. MRI's internal competition deadline is earlier than the NSF window.</aside>
+</section>
+</div></div>
+<div class="slide-box"><div class="slide-inner">
+<section id="concrete" data-transition="fade" style="background:#EDE9E0; color:#13233F; font-family:'IBM Plex Sans', Arial, sans-serif; padding:96px 112px 150px; display:flex; flex-direction:column; gap:32px">
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:24px; color:#A94A15; letter-spacing:2px; text-transform:uppercase; font-weight:600">Lake Clifton test site · concrete foundation</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:600; line-height:1.1; color:#13233F">The pad is designed; the PE sealing contract is in review</h2>
+  </div>
+  <div style="display:grid; grid-template-columns:940px 1fr; gap:40px; align-items:start">
+    <table style="font-size:24px; color:#2A3547">
+      <tr style="background:#13233F">
+        <th style="width:26%; color:#F6F4EE">Design basis</th>
+        <th style="width:74%; color:#F6F4EE">Value</th>
+      </tr>
+      <tr style="background:#FBFAF6">
+        <td>Pad</td>
+        <td>8 ft × 8 ft × 15 in reinforced concrete, embedded full depth</td>
+      </tr>
+      <tr style="background:#F4F1EA">
+        <td>Load</td>
+        <td>3,000–4,000 lbf stand; 4,155 lbf capacity at worst angle, FS 1.5</td>
+      </tr>
+      <tr style="background:#FBFAF6">
+        <td>Thickness</td>
+        <td>15 in is the thinnest pad with overturning FS ≥ 1.5</td>
+      </tr>
+      <tr style="background:#F4F1EA">
+        <td>Uplift</td>
+        <td>9,000 lbf max vertical-up thrust (pad flotation)</td>
+      </tr>
+      <tr style="background:#FBFAF6">
+        <td>Anchors</td>
+        <td>½ in wedge, 4.5 in embedment, DCR 0.53 incl. DAF 1.5</td>
+      </tr>
+      <tr style="background:#F4F1EA">
+        <td>Codes</td>
+        <td>ACI 318-19 · ASCE 7-22 · IBC 2021</td>
+      </tr>
+    </table>
+    <div style="display:flex; flex-direction:column; gap:16px; background:#FBFAF6; padding:32px; border:1px solid #D6D0C2; border-radius:12px">
+      <h3 style="font-size:32px; font-weight:600; color:#13233F">Procurement status</h3>
+      <ul style="font-size:24px; line-height:1.4; color:#2A3547">
+        <li>PWS-LC-FND-001 Rev. 2: a PE verifies, certifies and seals the foundation and anchorage</li>
+        <li>Procurement (O. Alo) sent it for administrative and legal review: liability, insurance, ownership</li>
+        <li>Ownership settled: the steel stand is a University asset on University land</li>
+        <li>Rev. 2 adds a roles matrix and MSU procurement-policy wording</li>
+        <li>Sep 14: Dr. Busari asked Procurement for an update; ground not yet broken</li>
+      </ul>
+    </div>
+  </div>
+  <div style="position:absolute; left:112px; right:112px; bottom:56px; display:flex; justify-content:space-between; gap:32px">
+    <p style="font-size:24px; color:#5B6575">Sources: thrust-pad design basis Rev D; PWS Rev. 2; Procurement e-mails, Sep 3–14</p>
+    <p style="font-size:24px; color:#5B6575">7</p>
+  </div>
+  <aside>Thickness was solved, not assumed: 15 in is the least whole-inch pad giving overturning FS of at least 1.5 at 4,000 lbf over every firing angle (worst 1.56 at 15–20 degrees; 14 in fails at 1.48). Dead weight 13,500 lb; passive resistance 2,250 lbf handles sliding. Worst firing angle is 20 degrees above horizontal. A separate fire-protection PWS and quantity-distance analysis went to Procurement and Safety on Sep 11.</aside>
+</section>
+</div></div>
+<div class="slide-box"><div class="slide-inner">
+<section id="lox-qd" data-transition="fade" style="background:#13233F; color:#F6F4EE; font-family:'IBM Plex Sans', Arial, sans-serif; padding:96px 112px 150px; display:flex; flex-direction:column; gap:32px">
+  <div style="display:flex; flex-direction:column; gap:8px">
+    <p style="font-size:24px; color:#F0A262; letter-spacing:2px; text-transform:uppercase; font-weight:600">Liquid rocket test rig · LOX feed</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:60px; font-weight:600; line-height:1.1; color:#F6F4EE">LOX quick-disconnect mechanism</h2>
+  </div>
+  <div style="display:flex; gap:48px; align-items:start">
+    <img src="/_blob/91767892d6549663aa6ddb64adb10aa9" alt="CAD render of the LOX quick-disconnect: a stainless air cylinder on the left, joined by four tie rods and laser-cut aluminum brackets to the threaded LOX coupling on the right" style="width:1000px; height:655px; object-fit:cover; border-radius:16px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:24px">
+      <div style="display:flex; flex-direction:column; gap:6px">
+        <p style="font-size:24px; color:#F0A262; font-weight:600">What it does</p>
+        <p style="font-size:28px; color:#DCE3EE; line-height:1.35">Remote, pneumatically actuated disconnect of the LOX line</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px">
+        <p style="font-size:24px; color:#F0A262; font-weight:600">Actuator</p>
+        <p style="font-size:28px; color:#DCE3EE; line-height:1.35">McMaster-Carr stainless double-acting air cylinder</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px">
+        <p style="font-size:24px; color:#F0A262; font-weight:600">Frame</p>
+        <p style="font-size:28px; color:#DCE3EE; line-height:1.35">Laser-cut 5052-H32 aluminum plates, 0.125 in, on four tie rods</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px">
+        <p style="font-size:24px; color:#F0A262; font-weight:600">Status</p>
+        <p style="font-size:28px; color:#DCE3EE; line-height:1.35">CAD complete. Plates quoted by Xometry at $68.08, sent to G. Whitaker to order</p>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute; left:112px; right:112px; bottom:56px; display:flex; justify-content:space-between; gap:32px">
+    <p style="font-size:24px; color:#AEB9CB">Xometry quote Q68-5836-6701 (Sep 8)</p>
+    <p style="font-size:24px; color:#AEB9CB">8</p>
+  </div>
+  <aside>Part of the pressure-fed LOX/RP-1 test rig with helium pressurant. The double-acting cylinder drives the release so the LOX fill line can be disconnected remotely. Plates: sheet cutting, aluminum 5052-H32, 0.125 in, one set, standard lead time.</aside>
+</section>
+</div></div>
+</div>
+<script>
+(function(){
+  function fit(){
+    document.querySelectorAll('.slide-box').forEach(function(box){
+      var inner=box.querySelector('.slide-inner');
+      var scale=box.clientWidth/1920;
+      inner.style.transform='scale('+scale+')';
+      box.style.height=(1080*scale)+'px';
+    });
+  }
+  window.addEventListener('resize',fit);
+  window.addEventListener('load',fit);
+  fit();
+})();
+</script>
+</body>
+</html>
