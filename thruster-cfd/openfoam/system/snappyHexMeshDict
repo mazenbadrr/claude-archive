@@ -10,7 +10,7 @@ addLayers       true;
 
 geometry
 {
-    propeller.stl { type triSurfaceMesh; name propeller; }
+    prop.stl { type triSurfaceMesh; name propeller; }
     duct.stl      { type triSurfaceMesh; name duct; }
 
     rotatingZone                       // MRF cell zone (encloses the blades)
@@ -33,7 +33,7 @@ castellatedMeshControls
 
     features
     (
-        { file "propeller.eMesh"; level 4; }
+        { file "prop.eMesh"; level 4; }
         { file "duct.eMesh";      level 2; }
     );
 
