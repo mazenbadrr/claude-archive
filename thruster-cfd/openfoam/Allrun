@@ -8,6 +8,10 @@ cd "${0%/*}" || exit 1
 MAT=${1:-pla}; RPM=${2:-2000}
 echo "=== MSU-T76 bollard  |  material=$MAT  rpm=$RPM ==="
 
+# Fresh start: runApplication SKIPS any step whose log.* already exists, so a
+# previous material's mesh/solution would be reused. Clear it (keep results.csv).
+rm -rf processor* postProcessing constant/polyMesh constant/extendedFeatureEdgeMesh \
+       constant/triSurface/*.eMesh log.* case.foam
 rm -rf 0 && cp -r 0.orig 0
 
 # feature edges (utility name changed across versions)
