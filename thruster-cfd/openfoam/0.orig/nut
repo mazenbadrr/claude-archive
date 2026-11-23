@@ -1,0 +1,30 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Roughness enters HERE: propeller Ks is the equivalent sand-grain roughness   |
+| of the print. scripts/set_case.py writes Ks from config (SLA 10um / PLA 80um |
+| / smooth 0). Cs = 0.5 (standard roughness constant).                         |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class volScalarField; object nut; }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+dimensions      [0 2 -1 0 0 0 0];
+internalField   uniform 0;
+
+boundaryField
+{
+    farfield { type calculated; value uniform 0; }
+
+    propeller
+    {
+        type        nutkRoughWallFunction;
+        Ks          uniform 1.0e-05;   // <-- set by set_case.py  (shown: SLA 10 um)
+        Cs          uniform 0.5;
+        value       uniform 0;
+    }
+    duct
+    {
+        type        nutkRoughWallFunction;
+        Ks          uniform 1.0e-06;   // duct treated ~smooth
+        Cs          uniform 0.5;
+        value       uniform 0;
+    }
+}
+// ************************************************************************* //

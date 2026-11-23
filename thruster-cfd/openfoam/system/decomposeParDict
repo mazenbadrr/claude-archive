@@ -1,0 +1,10 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Parallel decomposition. Set numberOfSubdomains to your core count.           |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object decomposeParDict; }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+numberOfSubdomains  8;
+method              hierarchical;
+hierarchicalCoeffs  { n (4 2 1); }     // 4*2*1 = 8 ; adjust to match above
+// ************************************************************************* //

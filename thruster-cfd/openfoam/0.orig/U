@@ -1,0 +1,18 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class volVectorField; object U; }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+dimensions      [0 1 -1 0 0 0 0];
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    farfield        // open still water (bollard: no advance speed)
+    {
+        type            pressureInletOutletVelocity;
+        value           uniform (0 0 0);
+    }
+    propeller { type noSlip; }   // rotates via MRF zone
+    duct      { type noSlip; }
+}
+// ************************************************************************* //

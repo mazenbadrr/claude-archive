@@ -1,0 +1,96 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Snaps the propeller + duct surfaces and builds the MRF rotating cellZone.     |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object snappyHexMeshDict; }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+geometry
+{
+    propeller.stl { type triSurfaceMesh; name propeller; }
+    duct.stl      { type triSurfaceMesh; name duct; }
+
+    rotatingZone                       // MRF cell zone (encloses the blades)
+    {
+        type    searchableCylinder;
+        point1  (0 0 -0.004);
+        point2  (0 0  0.024);
+        radius  0.0388;                // just inside the duct (39 mm), outside tip (38 mm)
+    }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       2000000;
+    maxGlobalCells      8000000;
+    minRefinementCells  10;
+    nCellsBetweenLevels 3;
+    resolveFeatureAngle 30;
+    allowFreeStandingZoneFaces true;
+
+    features
+    (
+        { file "propeller.eMesh"; level 4; }
+        { file "duct.eMesh";      level 2; }
+    );
+
+    refinementSurfaces
+    {
+        propeller { level (4 5); patchInfo { type wall; } }
+        duct      { level (3 3); patchInfo { type wall; } }
+        rotatingZone
+        {
+            level (0 0);
+            faceZone  rotatingZone;
+            cellZone  rotatingZone;
+            cellZoneInside inside;
+        }
+    }
+
+    refinementRegions
+    {
+        rotatingZone { mode inside; levels ((1e15 3)); }
+    }
+
+    locationInMesh (0.15 0.0 0.30);    // a point in the water, away from the prop
+}
+
+snapControls
+{
+    nSmoothPatch 3; tolerance 2.0; nSolveIter 50; nRelaxIter 5;
+    nFeatureSnapIter 10; implicitFeatureSnap false; explicitFeatureSnap true;
+}
+
+addLayersControls
+{
+    relativeSizes true;
+    layers
+    {
+        propeller { nSurfaceLayers 3; }
+        duct      { nSurfaceLayers 2; }
+    }
+    expansionRatio 1.2;
+    finalLayerThickness 0.4;
+    minThickness 0.1;
+    nGrow 0;
+    featureAngle 130;
+    nRelaxIter 5;
+    nSmoothSurfaceNormals 1; nSmoothNormals 3; nSmoothThickness 10;
+    maxFaceThicknessRatio 0.5; maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle 90; nBufferCellsNoExtrude 0;
+    nLayerIter 50;
+}
+
+meshQualityControls
+{
+    maxNonOrtho 65; maxBoundarySkewness 20; maxInternalSkewness 4;
+    maxConcave 80; minVol 1e-13; minTetQuality 1e-15; minArea -1;
+    minTwist 0.02; minDeterminant 0.001; minFaceWeight 0.02; minVolRatio 0.01;
+    minTriangleTwist -1; nSmoothScale 4; errorReduction 0.75;
+}
+
+mergeTolerance 1e-6;
+// ************************************************************************* //

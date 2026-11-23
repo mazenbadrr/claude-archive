@@ -1,0 +1,35 @@
+#!/bin/sh
+# Run ONE bollard case:   ./Allrun <material> <rpm>
+#   material = smooth | resin | pla     rpm = e.g. 2000
+cd "${0%/*}" || exit 1
+: "${WM_PROJECT_DIR:?Source an OpenFOAM environment first (e.g. 'source /usr/lib/openfoam/openfoam2312/etc/bashrc')}"
+. "$WM_PROJECT_DIR/bin/tools/RunFunctions"
+
+MAT=${1:-pla}; RPM=${2:-2000}
+echo "=== MSU-T76 bollard  |  material=$MAT  rpm=$RPM ==="
+
+rm -rf 0 && cp -r 0.orig 0
+
+# feature edges (utility name changed across versions)
+runApplication surfaceFeatures 2>/dev/null \
+  || runApplication surfaceFeatureExtract
+
+runApplication blockMesh
+runApplication snappyHexMesh -overwrite
+runApplication renumberMesh -overwrite
+
+python3 scripts/set_case.py --case . --material "$MAT" --rpm "$RPM" \
+        --config config/cfd_config.yaml
+
+NP=$(foamDictionary -entry numberOfSubdomains -value system/decomposeParDict 2>/dev/null || echo 1)
+if [ "${NP:-1}" -gt 1 ]; then
+    runApplication decomposePar
+    runParallel "$(getApplication)"
+    runApplication reconstructPar -latestTime
+else
+    runApplication "$(getApplication)"
+fi
+
+python3 scripts/post.py --case . --material "$MAT" --rpm "$RPM"
+touch case.foam
+echo "=== done. See results.csv  (open case.foam in ParaView, or run paraview/render.py) ==="

@@ -1,0 +1,48 @@
+# ============================================================================
+#  MSU-T76 ducted thruster — SINGLE SOURCE OF TRUTH for the CFD & prediction
+#  Replace the defaults below with your own measured values; both the
+#  analytical prediction (Track A) and the OpenFOAM case (Track B) read these.
+# ============================================================================
+
+# --- equivalent sand-grain roughness ks [metres] (the "material" difference) ---
+roughness:
+  smooth: 0.0        # reference
+  A_SLA:  10.0e-6    # Prop A: Standard Resin, MSLA, 50 um layers, smooth   <-- replace with measured Ra->ks
+  B_FDM:  80.0e-6    # Prop B: PLA, FDM, 0.20 mm layers, rough layer lines  <-- replace with measured Ra->ks
+  # Note: convert a measured arithmetic roughness Ra to equivalent sand-grain ks.
+  # A common first estimate is ks ~ 5.9*Ra (Adams et al.); printed layer lines
+  # are directional, so a measured ks from a flow test is preferable.
+
+# --- fluid (fresh water @ 20 C) ---
+fluid:
+  rho: 998.2         # kg/m3
+  mu:  1.002e-3      # Pa.s
+  p_vapor: 2339.0    # Pa (cavitation check)
+
+# --- operating points (bollard, J = 0) ---
+operating:
+  rpm: [1500, 1750, 2000]
+  J: 0.0             # advance ratio (bollard)
+  submergence_m: 0.16  # thruster axis below free surface (test tank)
+
+# --- propeller particulars (CONFIRMED from STL unless noted) ---
+propeller:
+  D_m: 0.076         # tip diameter (STL: 76.00 mm)
+  Z: 4               # blades (Ka 4-70)
+  EAR: 0.70          # Ae/Ao
+  PD: 0.60           # P/D (Kaplan constant pitch)
+  chord_075R_m: 0.0261   # ESTIMATE from EAR; refine from CAD/STL slice
+  t_over_c_075R: 0.045   # ESTIMATE, typical Ka-series; weak effect
+
+# --- baseline ducted-series coefficients at J=0  (NOMINAL - VERIFY!) ---
+# Ka 4-70 in Wageningen 19A nozzle, P/D=0.6, J=0.
+# Replace from Oosterveld (1970) / Carlton "Marine Propellers & Propulsion".
+series_bollard:
+  KT_total0: 0.55    # prop + nozzle thrust coeff  <-- VERIFY against source
+  KQ0:       0.048   # torque coeff                <-- VERIFY against source
+
+# --- duct (for Track B geometry; fill once duct CAD is in hand) ---
+duct:
+  type: "Wageningen 19A"
+  inner_dia_m: null  # <-- set from duct CAD; tip gap = (inner_dia - D)/2
+  tip_gap_m: null    # <-- target ~0.5-1.5 mm; drives ducted performance

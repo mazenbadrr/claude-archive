@@ -1,0 +1,21 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Multiple Reference Frame — the rotating zone around the propeller.           |
+| omega is written by scripts/set_case.py from the rpm in config.              |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object MRFProperties; }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+MRF1
+{
+    cellZone            rotatingZone;
+    active              yes;
+
+    // walls that lie inside the zone but must NOT rotate (the duct, if it
+    // intrudes). The propeller + hub rotate with the frame.
+    nonRotatingPatches  ( duct );
+
+    origin      (0 0 0);
+    axis        (0 0 1);
+    omega       157.07963;     // rad/s  <-- set by set_case.py  (2000 rpm shown)
+}
+// ************************************************************************* //

@@ -1,0 +1,12 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Extracts edges (.eMesh) for snappy feature snapping.                         |
+| Run:  surfaceFeatures   (older OpenFOAM: surfaceFeatureExtract)              |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object surfaceFeaturesDict; }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+surfaces ( "propeller.stl" "duct.stl" );
+
+includedAngle   150;
+subsetFeatures  { nonManifoldEdges no; openEdges yes; }
+// ************************************************************************* //

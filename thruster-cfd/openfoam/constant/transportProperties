@@ -1,0 +1,13 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| MSU-T76 ducted thruster — bollard CFD                                        |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object transportProperties; }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+transportModel  Newtonian;
+
+// fresh water @ 20 C :  nu = mu/rho = 1.002e-3 / 998.2
+nu              1.004e-06;   // m^2/s
+
+// (rho is set as rhoInf in the forces function object / post-processing)
+// ************************************************************************* //
