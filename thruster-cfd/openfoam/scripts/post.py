@@ -50,6 +50,7 @@ def main():
     except SystemExit:
         Fz_d = 0.0
 
+    Mz_p = abs(Mz_p)          # report shaft-torque magnitude (sign = rotation dir only)
     T_total = Fz_p + Fz_d
     KT_tot  = T_total / (RHO*n**2*D**4)
     KT_prop = Fz_p   / (RHO*n**2*D**4)
