@@ -31,11 +31,11 @@ castellatedMeshControls
     resolveFeatureAngle 30;
     allowFreeStandingZoneFaces true;
 
-    features
-    (
-        { file "prop.eMesh"; level 4; }
-        { file "duct.eMesh";      level 2; }
-    );
+    // Explicit feature edges disabled for portability (the surfaceFeatures
+    // utility's dict format varies by OpenFOAM version). Blades are resolved
+    // by surface refinement + resolveFeatureAngle below. To re-enable sharp
+    // edge snapping, generate prop.eMesh/duct.eMesh and list them here.
+    features ();
 
     refinementSurfaces
     {
@@ -61,7 +61,7 @@ castellatedMeshControls
 snapControls
 {
     nSmoothPatch 3; tolerance 2.0; nSolveIter 50; nRelaxIter 5;
-    nFeatureSnapIter 10; implicitFeatureSnap false; explicitFeatureSnap true;
+    nFeatureSnapIter 10; implicitFeatureSnap true; explicitFeatureSnap false;
 }
 
 addLayersControls
